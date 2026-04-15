@@ -9,6 +9,7 @@
   --dark-600: #6d685f;
   --dark-700: #888277;
   --dark-800: #a09b92;
+  --dark-950: #D9D7D3;
   --dark-0: #f6f5f4;
 
   --orange-500: #fc4502;
@@ -74,6 +75,7 @@
   --color-dark-600: var(--dark-600);
   --color-dark-700: var(--dark-700);
   --color-dark-800: var(--dark-800);
+  --color-dark-950: var(--dark-950);
   --color-dark-0: var(--dark-0);
 
   --color-orange-500: var(--orange-500);

@@ -1,6 +1,6 @@
 import { ArrowDropDown, ArrowDropUp } from "../../../../public/icons";
 
-export default function DropdownTriggerAtom({
+export default function DropdownTrigger({
   leftText,
   rightText = null,
   isOpen,

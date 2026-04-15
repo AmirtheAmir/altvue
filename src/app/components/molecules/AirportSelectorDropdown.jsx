@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import DropdownTriggerAtom from "../atoms/DropdownTriggerAtom";
-import SearchInputAtom from "../atoms/SearchInputAtom";
+import DropdownTrigger from "../atoms/DropdownTrigger";
+import SearchInput from "../atoms/SearchInput";
 
-export default function AirportSelectorDropdownMolecule({
+export default function AirportSelectorDropdown({
   label,
   selectedAirport,
   airports,
@@ -17,7 +17,10 @@ export default function AirportSelectorDropdownMolecule({
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target)
+      ) {
         setIsOpen(false);
       }
     };
@@ -52,7 +55,7 @@ export default function AirportSelectorDropdownMolecule({
 
   return (
     <div ref={containerRef} className="relative min-w-0 flex-1">
-      <DropdownTriggerAtom
+      <DropdownTrigger
         leftText={selectedAirport ? selectedAirport.city : label}
         rightText={selectedCode}
         placeholder={!selectedAirport}
@@ -63,7 +66,11 @@ export default function AirportSelectorDropdownMolecule({
 
       {isOpen ? (
         <div className="absolute top-[calc(100%+10px)] right-0 left-0 z-90 rounded-xl border-2 border-dark-700 bg-dark-50 p-2 shadow-[0_12px_28px_rgba(0,0,0,0.55)]">
-          <SearchInputAtom value={query} onChange={setQuery} placeholder="Search" />
+          <SearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder="Search"
+          />
 
           <div className="mt-2 max-h-32 overflow-y-auto">
             {filteredAirports.length ? (
@@ -82,7 +89,7 @@ export default function AirportSelectorDropdownMolecule({
                     className="flex  p-2 w-full items-center justify-between text-left"
                   >
                     <span
-                      className={`truncate font-M-700 ${
+                      className={`truncate font-M-500 ${
                         isCurrent ? "text-dark-0" : "text-dark-800"
                       }`}
                     >
@@ -90,7 +97,7 @@ export default function AirportSelectorDropdownMolecule({
                     </span>
 
                     <span
-                      className={` font-M-700 ${
+                      className={` font-M-500 ${
                         isCurrent ? "text-dark-0" : "text-dark-800"
                       }`}
                     >
@@ -100,7 +107,9 @@ export default function AirportSelectorDropdownMolecule({
                 );
               })
             ) : (
-              <p className="px-1 py-3 font-M-500 text-dark-800">No airports found.</p>
+              <p className="px-1 py-3 font-M-500 text-dark-800">
+                No airports found.
+              </p>
             )}
           </div>
         </div>

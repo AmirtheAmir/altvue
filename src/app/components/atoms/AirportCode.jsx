@@ -1,5 +1,6 @@
-export default function AirportCodeAtom({ code, Icon = null }) {
-  const hasIcon = Boolean(Icon);
+export default function AirportCode({ code, Icon = null }) {
+  const canRenderIcon = typeof Icon === "function";
+  const hasIcon = canRenderIcon;
 
   const wrapperClassName = hasIcon
     ? "flex items-center gap-1 rounded-lg border-2 border-orange-500 bg-dark-50 pr-2.5 pl-2 py-1.5"

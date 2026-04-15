@@ -1,82 +1,31 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
 import * as turf from "@turf/turf";
 import { createRoot } from "react-dom/client";
 import { FLand, FTakeoff } from "../../../public/icons";
-import AirportCodeAtom from "./atoms/AirportCodeAtom";
-import FlightControlBillboardOrganism from "./organisms/FlightControlBillboardOrganism";
-import {
-  airportByCode,
-  airportCatalog,
-  durationOptionsMinutes,
-  getRouteDurationByCodes,
-  getRoutesByDuration,
-} from "../db/routeDurationDatabase";
+import AirportCode from "./atoms/AirportCode";
+import { airportByCode, airportCatalog } from "../db/routeDurationDatabase";
 
-export default function AltvueMap() {
+export default function AltvueMap({ fromAirportCode = null, toAirportCode = null }) {
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
-  const markersRef = useRef([]);
+  const markersRef = useRef(new Map());
   const mapLoadedRef = useRef(false);
   const drawMapRef = useRef(null);
-
-  const [mode, setMode] = useState("pilot");
-  const [fromAirportCode, setFromAirportCode] = useState(null);
-  const [toAirportCode, setToAirportCode] = useState(null);
-  const [selectedDurationMinutes, setSelectedDurationMinutes] = useState(null);
-  const [selectedAutopilotRouteId, setSelectedAutopilotRouteId] = useState(null);
 
   const fromAirport = fromAirportCode ? airportByCode[fromAirportCode] : null;
   const toAirport = toAirportCode ? airportByCode[toAirportCode] : null;
 
-  const activeRouteDuration = getRouteDurationByCodes(
-    fromAirportCode,
-    toAirportCode,
-  );
-
-  const autopilotRoutes = useMemo(() => {
-    if (!Number.isFinite(selectedDurationMinutes)) {
-      return [];
-    }
-
-    return getRoutesByDuration(selectedDurationMinutes);
-  }, [selectedDurationMinutes]);
-
-  const resolvedAutopilotRouteId = useMemo(() => {
-    if (!autopilotRoutes.length) {
-      return null;
-    }
-
-    const hasSelectedRoute = selectedAutopilotRouteId
-      ? autopilotRoutes.some(
-          (routeRecord) => routeRecord.id === selectedAutopilotRouteId,
-        )
-      : false;
-
-    return hasSelectedRoute ? selectedAutopilotRouteId : autopilotRoutes[0].id;
-  }, [autopilotRoutes, selectedAutopilotRouteId]);
-
-  const resolvedAutopilotRoute = useMemo(() => {
-    if (!resolvedAutopilotRouteId) {
-      return null;
-    }
-
-    return (
-      autopilotRoutes.find(
-        (routeRecord) => routeRecord.id === resolvedAutopilotRouteId,
-      ) || null
-    );
-  }, [autopilotRoutes, resolvedAutopilotRouteId]);
-
   const clearMarkers = useCallback(() => {
-    markersRef.current.forEach(({ marker, root }) => {
-      root.unmount();
+    const markersToClear = Array.from(markersRef.current.values());
+
+    markersRef.current = new Map();
+
+    markersToClear.forEach(({ marker }) => {
       marker.remove();
     });
-
-    markersRef.current = [];
   }, []);
 
   const drawMapData = useCallback(() => {
@@ -113,26 +62,33 @@ export default function AltvueMap() {
       });
     }
 
-    clearMarkers();
+    const upsertAirportMarker = (airport, type = "default") => {
+      const Icon = type === "from" ? FTakeoff : type === "to" ? FLand : null;
+      const markerRecord = markersRef.current.get(airport.code);
 
-    const createAirportMarker = ({ coordinates, code, type = "default" }) => {
+      if (markerRecord) {
+        markerRecord.marker.getElement().style.zIndex =
+          type === "default" ? "10" : "20";
+        markerRecord.root.render(<AirportCode code={airport.code} Icon={Icon} />);
+        return;
+      }
+
       const markerEl = document.createElement("div");
       markerEl.className = "cursor-pointer";
       markerEl.style.zIndex = type === "default" ? "10" : "20";
 
       const root = createRoot(markerEl);
-      const Icon = type === "from" ? FTakeoff : type === "to" ? FLand : null;
 
-      root.render(<AirportCodeAtom code={code} Icon={Icon} />);
+      root.render(<AirportCode code={airport.code} Icon={Icon} />);
 
       const marker = new maplibregl.Marker({
         element: markerEl,
         anchor: "center",
       })
-        .setLngLat(coordinates)
+        .setLngLat(airport.coordinates)
         .addTo(map);
 
-      markersRef.current.push({ marker, root });
+      markersRef.current.set(airport.code, { marker, root });
     };
 
     airportCatalog.forEach((airport) => {
@@ -141,11 +97,7 @@ export default function AltvueMap() {
 
       const markerType = isFromAirport ? "from" : isToAirport ? "to" : "default";
 
-      createAirportMarker({
-        coordinates: airport.coordinates,
-        code: airport.code,
-        type: markerType,
-      });
+      upsertAirportMarker(airport, markerType);
     });
 
     if (!fromAirport || !toAirport) {
@@ -208,7 +160,7 @@ export default function AltvueMap() {
         },
       });
     }
-  }, [clearMarkers, fromAirport, toAirport]);
+  }, [fromAirport, toAirport]);
 
   useEffect(() => {
     drawMapRef.current = drawMapData;
@@ -228,7 +180,6 @@ export default function AltvueMap() {
     });
 
     mapRef.current = map;
-
 
     map.on("load", () => {
       const setPaintIfLayerExists = (layerId, property, value) => {
@@ -265,90 +216,9 @@ export default function AltvueMap() {
     }
   }, [drawMapData]);
 
-  const handleFromSelect = (airport) => {
-    setFromAirportCode(airport.code);
-  };
-
-  const handleToSelect = (airport) => {
-    setToAirportCode(airport.code);
-  };
-
-  const handleModeChange = (nextMode) => {
-    setMode(nextMode);
-
-    if (nextMode !== "autopilot" || !resolvedAutopilotRoute) {
-      return;
-    }
-
-    setSelectedAutopilotRouteId(resolvedAutopilotRoute.id);
-    setFromAirportCode(resolvedAutopilotRoute.from.code);
-    setToAirportCode(resolvedAutopilotRoute.to.code);
-  };
-
-  const handleDurationSelect = (durationMinutes) => {
-    setSelectedDurationMinutes(durationMinutes);
-
-    const routesForDuration = getRoutesByDuration(durationMinutes);
-
-    if (!routesForDuration.length) {
-      setSelectedAutopilotRouteId(null);
-      return;
-    }
-
-    const matchingRoute = routesForDuration.find(
-      (routeRecord) => routeRecord.id === selectedAutopilotRouteId,
-    );
-
-    const nextRoute = matchingRoute || routesForDuration[0];
-
-    setSelectedAutopilotRouteId(nextRoute.id);
-
-    if (mode === "autopilot") {
-      setFromAirportCode(nextRoute.from.code);
-      setToAirportCode(nextRoute.to.code);
-    }
-  };
-
-  const handleAutopilotRouteSelect = (routeId) => {
-    const selectedRoute = autopilotRoutes.find(
-      (routeRecord) => routeRecord.id === routeId,
-    );
-
-    if (!selectedRoute) {
-      return;
-    }
-
-    setSelectedAutopilotRouteId(routeId);
-    setFromAirportCode(selectedRoute.from.code);
-    setToAirportCode(selectedRoute.to.code);
-  };
-
   return (
     <section className="relative h-full w-full overflow-hidden bg-dark-50 font-sans">
       <div ref={mapContainerRef} className="h-full w-full" />
-
-      <div className="pointer-events-none absolute top-[196px] left-1/2 z-40 w-full -translate-x-1/2 px-4">
-        <div className="pointer-events-auto">
-          <FlightControlBillboardOrganism
-            mode={mode}
-            onModeChange={handleModeChange}
-            airports={airportCatalog}
-            fromAirport={fromAirport}
-            toAirport={toAirport}
-            onFromSelect={handleFromSelect}
-            onToSelect={handleToSelect}
-            durationLabel={activeRouteDuration?.durationLabel || null}
-            selectedDurationMinutes={selectedDurationMinutes}
-            durationOptionsMinutes={durationOptionsMinutes}
-            onDurationSelect={handleDurationSelect}
-            autopilotRoutes={autopilotRoutes}
-            selectedAutopilotRouteId={resolvedAutopilotRouteId}
-            onAutopilotRouteSelect={handleAutopilotRouteSelect}
-          />
-        </div>
-      </div>
     </section>
   );
 }
-
-

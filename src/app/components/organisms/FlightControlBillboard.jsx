@@ -1,9 +1,10 @@
 "use client";
 
 import { Airplane24, ArrowTo } from "../../../../public/icons";
-import AirportSelectorDropdownMolecule from "../molecules/AirportSelectorDropdownMolecule";
-import AutopilotRouteOptionMolecule from "../molecules/AutopilotRouteOptionMolecule";
-import DurationSelectorMolecule from "../molecules/DurationSelectorMolecule";
+import AirportSelectorDropdown from "../molecules/AirportSelectorDropdown";
+import AutopilotTimerOption from "../molecules/AutopilotTimerOption";
+import DurationSelector from "../molecules/DurationSelector";
+import TakeOffButton from "../atoms/TakeOffButton";
 
 const MODE_OPTIONS = [
   {
@@ -16,7 +17,7 @@ const MODE_OPTIONS = [
   },
 ];
 
-export default function FlightControlBillboardOrganism({
+export default function FlightControlBillboard({
   mode,
   onModeChange,
   airports,
@@ -35,8 +36,8 @@ export default function FlightControlBillboardOrganism({
   const hasDurationSelection = Number.isFinite(selectedDurationMinutes);
 
   return (
-    <article className="mx-auto w-full max-w-[760px] rounded-[24px] border border-orange-500 bg-black px-3 py-3 text-dark-0 shadow-[0_0_24px_rgba(252,69,2,0.45)]">
-      <div className="grid grid-cols-2 gap-2">
+    <article className="mx-auto w-full max-w-180 rounded-3xl border border-orange-500 bg-black p-4 text-dark-0 shadow-[0_0_24px_rgba(252,69,2,0.45)] flex-col flex gap-6">
+      <div className="grid grid-cols-2 gap-1">
         {MODE_OPTIONS.map((modeOption) => {
           const isActive = modeOption.id === mode;
 
@@ -45,10 +46,10 @@ export default function FlightControlBillboardOrganism({
               key={modeOption.id}
               type="button"
               onClick={() => onModeChange(modeOption.id)}
-              className={`h-10 rounded-[12px] font-M-700 transition-colors ${
+              className={`rounded-xl font-S-500 p-3 transition-colors ${
                 isActive
                   ? "bg-dark-200 text-dark-0"
-                  : "text-dark-700 hover:text-dark-0"
+                  : "text-dark-600 hover:text-dark-0 hover:cursor-pointer transition-colors duration-300"
               }`}
             >
               {modeOption.label}
@@ -58,13 +59,13 @@ export default function FlightControlBillboardOrganism({
       </div>
 
       {mode === "pilot" ? (
-        <div className="mt-6">
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-[24px_minmax(0,1fr)_20px_minmax(0,1fr)_132px] md:items-center">
-            <div className="flex h-11 items-center justify-center text-orange-500">
+        <div className="">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-[40px_minmax(0,1fr)_24px_minmax(0,1fr)_143px] md:items-center">
+            <div className="flex  items-center justify-center text-orange-500">
               <Airplane24 className="" />
             </div>
 
-            <AirportSelectorDropdownMolecule
+            <AirportSelectorDropdown
               label="From"
               selectedAirport={fromAirport}
               airports={airports}
@@ -72,11 +73,11 @@ export default function FlightControlBillboardOrganism({
               onSelect={onFromSelect}
             />
 
-            <div className="hidden items-center justify-center text-dark-700 md:flex">
+            <div className="hidden items-center justify-center text-dark-400 md:flex">
               <ArrowTo className="" />
             </div>
 
-            <AirportSelectorDropdownMolecule
+            <AirportSelectorDropdown
               label="To"
               selectedAirport={toAirport}
               airports={airports}
@@ -84,53 +85,43 @@ export default function FlightControlBillboardOrganism({
               onSelect={onToSelect}
             />
 
-            <button
-              type="button"
-              className="h-11 rounded-[12px] bg-orange-500 px-5 font-L-700 text-dark-50"
-            >
-              Take Off
-            </button>
+            <TakeOffButton className="ml-2" />
           </div>
 
           {durationLabel ? (
-            <div className="mt-6 flex items-center justify-center gap-8">
-              <span className="font-L-500 text-dark-700">Duration</span>
-              <span className="font-L-700 text-dark-800">{durationLabel}</span>
+            <div className=" flex mt-4 items-center justify-center gap-5">
+              <span className="font-S-500 text-dark-800">Duration</span>
+              <span className="font-S-500 text-dark-800">{durationLabel}</span>
             </div>
           ) : null}
         </div>
       ) : (
-        <div className="mt-6">
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-[24px_minmax(0,232px)_minmax(0,1fr)_132px] md:items-center">
-            <div className="flex h-11 items-center justify-center text-orange-500">
+        <div className="">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-[40px_minmax(0,223.5px)_minmax(0,1fr)_143px] md:items-center">
+            <div className="flex  items-center justify-center text-orange-500">
               <Airplane24 className="" />
             </div>
 
-            <DurationSelectorMolecule
+            <DurationSelector
               selectedMinutes={selectedDurationMinutes}
               optionsMinutes={durationOptionsMinutes}
               onSelect={onDurationSelect}
             />
 
-            <p className="max-w-[290px] font-M-500 leading-[1.35] text-dark-0">
+            <p className="font-XS-500 pl-2 text-dark-950">
               Set your own focus time by entering a duration that works for you.
               Choose how long you want to stay focused, and we&apos;ll handle the
               rest.
             </p>
 
-            <button
-              type="button"
-              className="h-11 rounded-[12px] bg-orange-500 px-5 font-L-700 text-dark-50"
-            >
-              Take Off
-            </button>
+            <TakeOffButton className="ml-2" />
           </div>
 
           {hasDurationSelection ? (
-            <div className="mt-6 flex max-h-[220px] flex-col gap-4 overflow-y-auto pr-1">
+            <div className="mt-4 max-h-44 flex-col gap-4 flex overflow-y-auto">
               {autopilotRoutes.length ? (
                 autopilotRoutes.map((route) => (
-                  <AutopilotRouteOptionMolecule
+                  <AutopilotTimerOption
                     key={route.id}
                     route={route}
                     checked={selectedAutopilotRouteId === route.id}
@@ -138,7 +129,7 @@ export default function FlightControlBillboardOrganism({
                   />
                 ))
               ) : (
-                <p className="font-L-500 text-dark-700">No routes for this timer value.</p>
+                <p className="font-M-500 text-dark-700">No routes for this timer value.</p>
               )}
             </div>
           ) : null}

@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import DropdownTriggerAtom from "../atoms/DropdownTriggerAtom";
+import DropdownTrigger from "../atoms/DropdownTrigger";
 
-export default function DurationSelectorMolecule({
+export default function DurationSelector({
   selectedMinutes,
   optionsMinutes,
   onSelect,
@@ -28,8 +28,8 @@ export default function DurationSelectorMolecule({
   const hasSelection = Number.isFinite(selectedMinutes);
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-[232px]">
-      <DropdownTriggerAtom
+    <div ref={containerRef} className="relative w-full max-w-58">
+      <DropdownTrigger
         leftText={hasSelection ? `${selectedMinutes}:00` : "Select Timer"}
         isOpen={isOpen}
         onClick={() => setIsOpen((prev) => !prev)}
@@ -39,7 +39,7 @@ export default function DurationSelectorMolecule({
       />
 
       {isOpen ? (
-        <div className="absolute top-[calc(100%+8px)] right-0 left-0 z-[90] rounded-[14px] border border-dark-800 bg-dark-50 p-2 shadow-[0_12px_28px_rgba(0,0,0,0.55)]">
+        <div className="absolute top-[calc(100%+8px)] right-0 left-0 z-90 rounded-[14px] border border-dark-800 bg-dark-50 p-2 shadow-[0_12px_28px_rgba(0,0,0,0.55)]">
           {optionsMinutes.map((minutes) => {
             const isSelected = selectedMinutes === minutes;
 
