@@ -7,7 +7,6 @@ import { createRoot } from "react-dom/client";
 import { FLand, FTakeoff } from "../../../public/icons";
 import AirportCodeAtom from "./atoms/AirportCodeAtom";
 import FlightControlBillboardOrganism from "./organisms/FlightControlBillboardOrganism";
-import { cityDatabase, defaultRoute } from "../db/cityDatabase";
 import {
   airportByCode,
   airportCatalog,
@@ -15,39 +14,6 @@ import {
   getRouteDurationByCodes,
   getRoutesByDuration,
 } from "../db/routeDurationDatabase";
-
-const cityByName = cityDatabase.reduce((acc, cityRecord) => {
-  acc[cityRecord.city] = cityRecord;
-  return acc;
-}, {});
-
-const getAirportFromRoute = ({ city, airportCode }) => {
-  const cityRecord = cityByName[city];
-
-  if (!cityRecord) {
-    return null;
-  }
-
-  const airportRecord = cityRecord.airports.find(
-    (airport) => airport.code === airportCode,
-  );
-
-  if (!airportRecord) {
-    return null;
-  }
-
-  return {
-    ...airportRecord,
-    city: cityRecord.city,
-    country: cityRecord.country,
-    continent: cityRecord.continent,
-  };
-};
-
-const defaultFromAirport =
-  getAirportFromRoute(defaultRoute.from) || airportCatalog[0] || null;
-const defaultToAirport =
-  getAirportFromRoute(defaultRoute.to) || airportCatalog[1] || null;
 
 export default function AltvueMap() {
   const mapRef = useRef(null);
@@ -57,12 +23,8 @@ export default function AltvueMap() {
   const drawMapRef = useRef(null);
 
   const [mode, setMode] = useState("pilot");
-  const [fromAirportCode, setFromAirportCode] = useState(
-    defaultFromAirport?.code || null,
-  );
-  const [toAirportCode, setToAirportCode] = useState(
-    defaultToAirport?.code || null,
-  );
+  const [fromAirportCode, setFromAirportCode] = useState(null);
+  const [toAirportCode, setToAirportCode] = useState(null);
   const [selectedDurationMinutes, setSelectedDurationMinutes] = useState(null);
   const [selectedAutopilotRouteId, setSelectedAutopilotRouteId] = useState(null);
 
@@ -120,7 +82,7 @@ export default function AltvueMap() {
   const drawMapData = useCallback(() => {
     const map = mapRef.current;
 
-    if (!map || !mapLoadedRef.current || !fromAirport || !toAirport) {
+    if (!map || !mapLoadedRef.current) {
       return;
     }
 
@@ -174,8 +136,8 @@ export default function AltvueMap() {
     };
 
     airportCatalog.forEach((airport) => {
-      const isFromAirport = airport.code === fromAirport.code;
-      const isToAirport = airport.code === toAirport.code;
+      const isFromAirport = airport.code === fromAirport?.code;
+      const isToAirport = airport.code === toAirport?.code;
 
       const markerType = isFromAirport ? "from" : isToAirport ? "to" : "default";
 
@@ -185,6 +147,18 @@ export default function AltvueMap() {
         type: markerType,
       });
     });
+
+    if (!fromAirport || !toAirport) {
+      if (map.getLayer("route-line")) {
+        map.removeLayer("route-line");
+      }
+
+      if (map.getSource("route")) {
+        map.removeSource("route");
+      }
+
+      return;
+    }
 
     const routeLine = turf.lineString([fromAirport.coordinates, toAirport.coordinates]);
     const routeDistance = turf.length(routeLine, { units: "kilometers" });
@@ -255,7 +229,6 @@ export default function AltvueMap() {
 
     mapRef.current = map;
 
-    map.addControl(new maplibregl.NavigationControl(), "top-right");
 
     map.on("load", () => {
       const setPaintIfLayerExists = (layerId, property, value) => {
@@ -377,3 +350,5 @@ export default function AltvueMap() {
     </section>
   );
 }
+
+

@@ -62,10 +62,10 @@ export default function AirportSelectorDropdownMolecule({
       />
 
       {isOpen ? (
-        <div className="absolute top-[calc(100%+8px)] right-0 left-0 z-[90] rounded-[14px] border border-dark-800 bg-dark-50 px-3 pb-3 pt-2 shadow-[0_12px_28px_rgba(0,0,0,0.55)]">
+        <div className="absolute top-[calc(100%+10px)] right-0 left-0 z-90 rounded-xl border-2 border-dark-700 bg-dark-50 p-2 shadow-[0_12px_28px_rgba(0,0,0,0.55)]">
           <SearchInputAtom value={query} onChange={setQuery} placeholder="Search" />
 
-          <div className="mt-2 max-h-64 overflow-y-auto">
+          <div className="mt-2 max-h-32 overflow-y-auto">
             {filteredAirports.length ? (
               filteredAirports.map((airport) => {
                 const isCurrent = airport.code === selectedCode;
@@ -79,19 +79,19 @@ export default function AirportSelectorDropdownMolecule({
                       setIsOpen(false);
                       setQuery("");
                     }}
-                    className="flex h-11 w-full items-center justify-between text-left"
+                    className="flex  p-2 w-full items-center justify-between text-left"
                   >
                     <span
-                      className={`truncate font-L-700 ${
-                        isCurrent ? "text-dark-0" : "text-dark-700"
+                      className={`truncate font-M-700 ${
+                        isCurrent ? "text-dark-0" : "text-dark-800"
                       }`}
                     >
                       {airport.city}
                     </span>
 
                     <span
-                      className={`ml-3 shrink-0 font-L-700 ${
-                        isCurrent ? "text-dark-0" : "text-dark-700"
+                      className={` font-M-700 ${
+                        isCurrent ? "text-dark-0" : "text-dark-800"
                       }`}
                     >
                       {airport.code}
@@ -100,7 +100,7 @@ export default function AirportSelectorDropdownMolecule({
                 );
               })
             ) : (
-              <p className="px-1 py-3 font-M-500 text-dark-700">No airports found.</p>
+              <p className="px-1 py-3 font-M-500 text-dark-800">No airports found.</p>
             )}
           </div>
         </div>
