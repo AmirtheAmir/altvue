@@ -13,7 +13,7 @@ export default function AirportCode({ code, Icon = null }) {
   return (
     <div className={wrapperClassName}>
       {hasIcon ? (
-        <span className="flex items-center justify-center text-orange-500">
+        <span className="flex items-center justify-center text-dark-800">
           <Icon className="" />
         </span>
       ) : null}

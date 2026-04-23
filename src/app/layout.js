@@ -1,9 +1,9 @@
-import { Fira_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 
-const firaSans = Fira_Sans({
-  variable: "--font-fira-sans",
+const inter = Inter({
+  variable: "--font-inter",
   weight: ["500", "700"],
   subsets: ["latin"],
   display: "swap",
@@ -16,7 +16,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${firaSans.variable} h-full antialiased`}>
+    <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
   );

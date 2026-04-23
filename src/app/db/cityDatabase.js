@@ -1,8 +1,7 @@
 export const cityDatabase = [
   {
     city: "New York",
-    country: "USA",
-    continent: "America",
+    country: "United States of America",
     airports: [
       {
         name: "John F. Kennedy International Airport",
@@ -19,7 +18,6 @@ export const cityDatabase = [
   {
     city: "London",
     country: "United Kingdom",
-    continent: "Europe",
     airports: [
       {
         name: "Heathrow Airport",
@@ -36,7 +34,6 @@ export const cityDatabase = [
   {
     city: "Paris",
     country: "France",
-    continent: "Europe",
     airports: [
       {
         name: "Charles de Gaulle Airport",
@@ -70,7 +67,6 @@ export const cityDatabase = [
   {
     city: "Lisbon",
     country: "Portugal",
-    continent: "Europe",
     airports: [
       {
         name: "Humberto Delgado Airport",
@@ -80,14 +76,3 @@ export const cityDatabase = [
     ],
   },
 ];
-
-export const defaultRoute = {
-  from: {
-    city: "New York",
-    airportCode: "JFK",
-  },
-  to: {
-    city: "Lisbon",
-    airportCode: "LIS",
-  },
-};
