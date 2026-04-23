@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { createRoot } from "react-dom/client";
 import maplibregl from "maplibre-gl";
+import CityCode from "./atoms/CityCode";
+import { cityDatabase } from "../db/cityDatabase";
 
 const MAP_STYLE = "https://tiles.openfreemap.org/styles/dark";
 const INITIAL_CENTER = [-40, 43];
@@ -19,6 +22,22 @@ const setLayoutIfLayerExists = (map, layerId, property, value) => {
   } else {
     console.log(`Missing layout layer: ${layerId}`);
   }
+};
+
+const removeSmallPlaceLabels = (map) => {
+  const layersToHide = [
+    "place_state",
+    "place_city",
+    "place_village",
+    "place_suburb",
+    "place_other",
+    "highway_name_other",
+    "place_country_other",
+  ];
+
+  layersToHide.forEach((layerId) => {
+    setLayoutIfLayerExists(map, layerId, "visibility", "none");
+  });
 };
 
 const applyEnglishOnlyLabels = (map) => {
@@ -53,6 +72,38 @@ const applyBaseMapTheme = (map) => {
   setPaintIfLayerExists(map, "boundary_state", "line-dasharray", null);
 
   applyEnglishOnlyLabels(map);
+
+  removeSmallPlaceLabels(map);
+};
+
+const createAirportMarkers = (map) => {
+  cityDatabase.forEach((cityItem) => {
+    cityItem.airports.forEach((airport) => {
+      const markerElement = document.createElement("div");
+
+      const root = createRoot(markerElement);
+
+      const renderMarker = (isHovered = false) => {
+        root.render(<CityCode code={airport.code} isHovered={isHovered} />);
+      };
+
+      renderMarker(false);
+
+      markerElement.addEventListener("mouseenter", () => {
+        renderMarker(true);
+      });
+      markerElement.addEventListener("mouseleave", () => {
+        renderMarker(false);
+      });
+
+      new maplibregl.Marker({
+        element: markerElement,
+        anchor: "center",
+      })
+        .setLngLat(airport.coordinates)
+        .addTo(map);
+    });
+  });
 };
 
 export default function AltvueMap() {
@@ -76,6 +127,7 @@ export default function AltvueMap() {
 
     map.on("load", () => {
       applyBaseMapTheme(map);
+      createAirportMarkers(map);
     });
 
     return () => {
