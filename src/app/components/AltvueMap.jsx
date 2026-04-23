@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import maplibregl from "maplibre-gl";
-import CityCode from "./atoms/CityCode";
+import AirportCodeMarker from "./atoms/AirportCodeMarker";
 import { cityDatabase } from "../db/cityDatabase";
 
 const MAP_STYLE = "https://tiles.openfreemap.org/styles/dark";
@@ -84,7 +84,7 @@ const createAirportMarkers = (map) => {
       const root = createRoot(markerElement);
 
       const renderMarker = (isHovered = false) => {
-        root.render(<CityCode code={airport.code} isHovered={isHovered} />);
+        root.render(<AirportCodeMarker code={airport.code} isHovered={isHovered} />);
       };
 
       renderMarker(false);
@@ -137,7 +137,7 @@ export default function AltvueMap() {
   }, []);
 
   return (
-    <section className="relative h-full w-full overflow-hidden bg-dark-50">
+    <section className="relative h-full w-full overflow-hidden bg-dark-50 z-0">
       <div ref={mapContainerRef} className="h-full w-full" />
     </section>
   );

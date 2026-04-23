@@ -1,0 +1,9 @@
+export { default as AirplaneModeActiveIcon } from "@/assets/icons/airplanemode_active.svg";
+export { default as ArrowDropDownIcon } from "@/assets/icons/arrow_drop_down.svg";
+export { default as ArrowDropUpIcon } from "@/assets/icons/arrow_drop_up.svg";
+export { default as FlightLand14Icon } from "@/assets/icons/flight_land_14.svg";
+export { default as FlightLand16Icon } from "@/assets/icons/flight_land_16.svg";
+export { default as FlightTakeoff14Icon } from "@/assets/icons/flight_takeoff_14.svg";
+export { default as FlightTakeoff16Icon } from "@/assets/icons/flight_takeoff_16.svg";
+export { default as GlobeIcon } from "@/assets/icons/globe.svg";
+export { default as ManualIcon } from "@/assets/icons/manual.svg";
