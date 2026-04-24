@@ -7,3 +7,4 @@ export { default as FlightTakeoff14Icon } from "@/assets/icons/flight_takeoff_14
 export { default as FlightTakeoff16Icon } from "@/assets/icons/flight_takeoff_16.svg";
 export { default as GlobeIcon } from "@/assets/icons/globe.svg";
 export { default as ManualIcon } from "@/assets/icons/manual.svg";
+export { default as PlaneIcon } from "@/assets/icons/plane.svg";

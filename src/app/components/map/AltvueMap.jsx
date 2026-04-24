@@ -3,11 +3,13 @@
 import { useRef } from "react";
 import { useInitializeMap } from "./hooks/useInitializeMap";
 import { useMapFocus } from "./hooks/useMapFocus";
+import { usePlaneRouteAnimation } from "./hooks/usePlaneRouteAnimation";
 import { useRouteSync } from "./hooks/useRouteSync";
 import { getSelectedMarkerTypes } from "./utils/markerUtils";
 
 export default function AltvueMap({
   focusedCoordinates = null,
+  flightPlan = null,
   fromAirport = null,
   toAirport = null,
 }) {
@@ -46,6 +48,7 @@ export default function AltvueMap({
   });
 
   useMapFocus({ mapRef, focusedCoordinates });
+  usePlaneRouteAnimation({ mapRef, flightPlan });
 
   return (
     <section className="relative h-full w-full overflow-hidden bg-dark-50 z-0">

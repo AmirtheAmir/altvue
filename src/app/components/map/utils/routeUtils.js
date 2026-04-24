@@ -54,6 +54,55 @@ export const createCurvedRouteCoordinates = (startCoordinates, endCoordinates) =
   });
 };
 
+const getCoordinateDistance = (startCoordinates, endCoordinates) => {
+  const [startLng, startLat] = startCoordinates;
+  const [endLng, endLat] = endCoordinates;
+
+  return Math.hypot(endLng - startLng, endLat - startLat);
+};
+
+export const getRouteCoordinateAtProgress = (coordinates, progress) => {
+  if (!coordinates?.length) {
+    return null;
+  }
+
+  if (coordinates.length === 1) {
+    return coordinates[0];
+  }
+
+  const clampedProgress = Math.min(Math.max(progress, 0), 1);
+  const segmentLengths = coordinates.slice(1).map((coordinate, index) => {
+    return getCoordinateDistance(coordinates[index], coordinate);
+  });
+  const totalDistance = segmentLengths.reduce((total, length) => total + length, 0);
+
+  if (!totalDistance) {
+    return coordinates[0];
+  }
+
+  const targetDistance = totalDistance * clampedProgress;
+  let traveledDistance = 0;
+
+  for (let index = 0; index < segmentLengths.length; index += 1) {
+    const segmentLength = segmentLengths[index];
+
+    if (traveledDistance + segmentLength >= targetDistance) {
+      const segmentProgress = (targetDistance - traveledDistance) / segmentLength;
+      const [startLng, startLat] = coordinates[index];
+      const [endLng, endLat] = coordinates[index + 1];
+
+      return [
+        startLng + (endLng - startLng) * segmentProgress,
+        startLat + (endLat - startLat) * segmentProgress,
+      ];
+    }
+
+    traveledDistance += segmentLength;
+  }
+
+  return coordinates[coordinates.length - 1];
+};
+
 // Converts selected from/to airports into the GeoJSON MapLibre expects.
 export const getRouteData = (fromAirport, toAirport) => {
   if (!fromAirport?.coordinates || !toAirport?.coordinates) {

@@ -11,17 +11,13 @@ export const useMapFocus = ({ mapRef, focusedCoordinates }) => {
     }
 
     const focusMap = () => {
+      map.stop();
       map.easeTo({
         center: focusedCoordinates,
         duration: MAP_FOCUS_DURATION,
         essential: true,
       });
     };
-
-    if (!map.loaded()) {
-      map.once("load", focusMap);
-      return;
-    }
 
     focusMap();
   }, [mapRef, focusedCoordinates]);

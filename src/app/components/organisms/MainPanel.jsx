@@ -6,22 +6,28 @@ import TakeOffButton from "../atoms/TakeOffButton";
 import ModeSwitch from "../molecules/ModeSwitch";
 import AirportSelectorInput from "../molecules/AirportSelectorInput";
 
+const formatFocusDuration = (minutes) => {
+  return `${String(minutes).padStart(2, "0")}:00`;
+};
+
 export default function MainPanel({
+  focusDuration,
   fromAirport,
   toAirport,
   onFromSelect,
+  onTakeOff,
   onToSelect,
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState("manual");
 
   const canShowDuration = useMemo(() => {
-    return mode === "manual" && fromAirport && toAirport;
-  }, [mode, fromAirport, toAirport]);
+    return mode === "manual" && focusDuration;
+  }, [mode, focusDuration]);
 
   return (
     <section
-      className={`w-101 rounded-3xl flex flex-col gap-4  bg-[rgba(0,0,0,0.25)] p-3 shadow-[0_0_56px_rgba(0,0,0,0.72)] backdrop-blur-lg transition-all duration-300 ease-in-out ${
+      className={`w-101 rounded-3xl flex flex-col gap-4 bg-[rgba(0,0,0,0.25)] p-3 shadow-[0_0_56px_rgba(0,0,0,0.72)] backdrop-blur-lg transition-all duration-300 ease-in-out ${
         isOpen ? "min-h-68" : "min-h-11"
       }`}
     >
@@ -51,11 +57,17 @@ export default function MainPanel({
                   <span className="font-XS-500 text-dark-900">
                     Duration of this flight is estimated to be
                   </span>
-                  <span className="font-XS-700 text-dark-900">45:00</span>
+                  <span className="font-XS-700 text-dark-900">
+                    {formatFocusDuration(focusDuration.minutes)}
+                  </span>
                 </div>
               )}
 
-              <TakeOffButton className="mt-2" />
+              <TakeOffButton
+                className="mt-2"
+                disabled={!fromAirport || !toAirport || !focusDuration}
+                onClick={onTakeOff}
+              />
             </div>
           ) : (
             <div className="mt-5 rounded-[18px] border border-[#5F5F5F] px-4 py-6 text-center text-[16px] font-medium text-[#A5A5A5]">
