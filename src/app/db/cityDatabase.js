@@ -265,3 +265,36 @@ export const cityDatabase = [
     ],
   },
 ];
+
+const getAverageCoordinate = (airports, coordinateIndex) => {
+  if (!airports?.length) {
+    return null;
+  }
+
+  const total = airports.reduce((sum, airport) => {
+    return sum + airport.coordinates[coordinateIndex];
+  }, 0);
+
+  return total / airports.length;
+};
+
+export const getCityCenterByName = (cityName) => {
+  if (!cityName) {
+    return null;
+  }
+
+  const cityItem = cityDatabase.find((item) => item.city === cityName);
+
+  if (!cityItem?.airports?.length) {
+    return null;
+  }
+
+  return [
+    getAverageCoordinate(cityItem.airports, 0),
+    getAverageCoordinate(cityItem.airports, 1),
+  ];
+};
+
+export const getCityCenterByAirport = (airport) => {
+  return getCityCenterByName(airport?.city) ?? airport?.coordinates ?? null;
+};

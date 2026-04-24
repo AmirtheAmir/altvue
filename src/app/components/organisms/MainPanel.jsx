@@ -6,11 +6,14 @@ import TakeOffButton from "../atoms/TakeOffButton";
 import ModeSwitch from "../molecules/ModeSwitch";
 import AirportSelectorInput from "../molecules/AirportSelectorInput";
 
-export default function MainPanel() {
+export default function MainPanel({
+  fromAirport,
+  toAirport,
+  onFromSelect,
+  onToSelect,
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState("manual");
-  const [fromAirport, setFromAirport] = useState(null);
-  const [toAirport, setToAirport] = useState(null);
 
   const canShowDuration = useMemo(() => {
     return mode === "manual" && fromAirport && toAirport;
@@ -33,12 +36,14 @@ export default function MainPanel() {
               <AirportSelectorInput
                 type="from"
                 selectedAirport={fromAirport}
-                onSelect={setFromAirport}
+                excludedCity={toAirport?.city}
+                onSelect={onFromSelect}
               />
               <AirportSelectorInput
                 type="to"
                 selectedAirport={toAirport}
-                onSelect={setToAirport}
+                excludedCity={fromAirport?.city}
+                onSelect={onToSelect}
               />
 
               {canShowDuration && (

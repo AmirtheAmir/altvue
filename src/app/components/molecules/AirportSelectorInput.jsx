@@ -14,6 +14,7 @@ import AirportCard from "./AirportCard";
 export default function AirportSelectorInput({
   type = "from",
   selectedAirport,
+  excludedCity,
   onSelect,
   iconClassName,
   placeholderClassName,
@@ -28,15 +29,17 @@ export default function AirportSelectorInput({
   const placeholder = type === "from" ? "From" : "To";
 
   const airportItems = useMemo(() => {
-    return cityDatabase.flatMap((cityItem) =>
-      cityItem.airports.map((airport) => ({
-        city: cityItem.city,
-        country: cityItem.country,
-        code: airport.code,
-        coordinates: airport.coordinates,
-      })),
-    );
-  }, []);
+    return cityDatabase
+      .filter((cityItem) => cityItem.city !== excludedCity)
+      .flatMap((cityItem) =>
+        cityItem.airports.map((airport) => ({
+          city: cityItem.city,
+          country: cityItem.country,
+          code: airport.code,
+          coordinates: airport.coordinates,
+        })),
+      );
+  }, [excludedCity]);
 
   const handleSelect = (airport) => {
     onSelect(airport);
