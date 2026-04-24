@@ -7,7 +7,7 @@ export default function ModeSwitch({ mode, onChange }) {
   const isAutopilot = mode === "autopilot";
 
   return (
-    <div className="grid w-full grid-cols-2 gap-1 rounded-xl border-2 border-dark-300 p-1">
+    <div className="grid w-full grid-cols-2 gap-1 rounded-xl ring-2 ring-dark-300 p-1">
       <button
         type="button"
         onClick={() => onChange("manual")}

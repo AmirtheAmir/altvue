@@ -7,4 +7,9 @@ export { default as FlightTakeoff14Icon } from "@/assets/icons/flight_takeoff_14
 export { default as FlightTakeoff16Icon } from "@/assets/icons/flight_takeoff_16.svg";
 export { default as GlobeIcon } from "@/assets/icons/globe.svg";
 export { default as ManualIcon } from "@/assets/icons/manual.svg";
+export { default as MusicNoteOffIcon } from "@/assets/icons/music_note_off.svg";
+export { default as MusicNoteOnIcon } from "@/assets/icons/music_note_on.svg";
+export { default as PauseIcon } from "@/assets/icons/pause.svg";
+export { default as Plane16Icon } from "@/assets/icons/plane16.svg";
 export { default as PlaneIcon } from "@/assets/icons/plane.svg";
+export { default as PlayArrowIcon } from "@/assets/icons/play_arrow.svg";

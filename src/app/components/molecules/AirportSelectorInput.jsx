@@ -86,7 +86,7 @@ export default function AirportSelectorInput({
       </button>
 
       {isPickerOpen && (
-        <div className="border-2 border-dark-400 absolute left-0 top-14 z-30 w-69 rounded-2xl bg-dark-200 p-2 shadow-[0_0_72px_rgba(0,0,0,0.56)]">
+        <div className="ring-2 ring-dark-400 absolute left-0 top-14 z-30 w-67 rounded-2xl bg-dark-200 p-2 shadow-[0_0_72px_rgba(0,0,0,0.56)]">
           <div className="grid max-h-60 grid-cols-2 gap-2 overflow-y-auto">
             {airportItems.map((airport) => {
               const isActive = selectedAirport?.code === airport.code;

@@ -10,8 +10,7 @@ import {
   createCurvedRouteCoordinates,
   getRouteCoordinateAtProgress,
 } from "../utils/routeUtils";
-
-const MINUTE_IN_MS = 60000;
+import { getFlightProgress } from "../../../utils/flightTiming";
 
 const EMPTY_PLANE_DATA = {
   type: "FeatureCollection",
@@ -61,16 +60,6 @@ const getPlaneData = (coordinates, bearing = 0) => {
       },
     ],
   };
-};
-
-const getAnimationDuration = (flightPlan) => {
-  const durationMinutes = Number(flightPlan?.durationMinutes);
-
-  if (!Number.isFinite(durationMinutes) || durationMinutes <= 0) {
-    return null;
-  }
-
-  return durationMinutes * MINUTE_IN_MS;
 };
 
 const createPlaneImage = () => {
@@ -169,12 +158,10 @@ export const usePlaneRouteAnimation = ({ mapRef, flightPlan }) => {
       }
     };
 
-    const animationDuration = getAnimationDuration(flightPlan);
-
     if (
       !flightPlan?.fromAirport?.coordinates ||
       !flightPlan?.toAirport?.coordinates ||
-      !animationDuration
+      !flightPlan?.durationMs
     ) {
       cleanupPlane();
       return;
@@ -210,19 +197,13 @@ export const usePlaneRouteAnimation = ({ mapRef, flightPlan }) => {
       }
 
       const bearingProgressStep =
-        PLANE_ANIMATION_BEARING_LOOKAHEAD / animationDuration;
+        PLANE_ANIMATION_BEARING_LOOKAHEAD / flightPlan.durationMs;
       let latestBearing = 0;
-      let startedAt = null;
 
-      const updatePlanePosition = (timestamp) => {
-        if (startedAt === null) {
-          startedAt = timestamp;
-        }
-
-        // Convert elapsed time into a 0..1 route progress value across
-        // the selected focus duration.
-        const elapsedTime = timestamp - startedAt;
-        const progress = Math.min(elapsedTime / animationDuration, 1);
+      const updatePlanePosition = () => {
+        // Progress comes from the shared flight session, so pause/resume affects
+        // the map plane and the panel countdown in exactly the same way.
+        const progress = getFlightProgress(flightPlan);
         const currentCoordinates = getRouteCoordinateAtProgress(
           routeCoordinates,
           progress,
@@ -252,6 +233,11 @@ export const usePlaneRouteAnimation = ({ mapRef, flightPlan }) => {
         updatePlaneLayer(map, currentCoordinates, latestBearing);
 
         if (progress >= 1) {
+          clearAnimationFrame();
+          return;
+        }
+
+        if (flightPlan.isPaused) {
           clearAnimationFrame();
           return;
         }

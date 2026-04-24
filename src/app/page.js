@@ -5,6 +5,7 @@ import AltvueMap from "./components/map/AltvueMap";
 import MainPanel from "./components/organisms/MainPanel";
 import { getCityCenterByAirport } from "./db/cityDatabase";
 import { getFocusDurationByAirports } from "./db/focusDurationDatabase";
+import { getFlightDurationMs, getFlightElapsedMs } from "./utils/flightTiming";
 
 export default function Home() {
   const [fromAirport, setFromAirport] = useState(null);
@@ -38,13 +39,82 @@ export default function Home() {
       return;
     }
 
+    const startedAt = Date.now();
+    const durationMs = getFlightDurationMs(focusDuration.minutes);
+
+    if (!durationMs) {
+      return;
+    }
+
     setFlightPlan((currentFlightPlan) => ({
       id: (currentFlightPlan?.id ?? 0) + 1,
+      arrivalAt: startedAt + durationMs,
+      departureAt: startedAt,
       durationCategory: focusDuration.category,
+      durationMs,
       durationMinutes: focusDuration.minutes,
+      elapsedBeforePauseMs: 0,
       fromAirport,
+      isPaused: false,
+      musicEnabled: true,
+      resumedAt: startedAt,
       toAirport,
     }));
+  };
+
+  const handleCancelFlight = () => {
+    setFlightPlan(null);
+    setFromAirport(null);
+    setToAirport(null);
+    setFocusedCoordinates(null);
+  };
+
+  const handlePauseFlight = () => {
+    const pausedAt = Date.now();
+
+    setFlightPlan((currentFlightPlan) => {
+      if (!currentFlightPlan || currentFlightPlan.isPaused) {
+        return currentFlightPlan;
+      }
+
+      return {
+        ...currentFlightPlan,
+        elapsedBeforePauseMs: getFlightElapsedMs(currentFlightPlan, pausedAt),
+        isPaused: true,
+        pausedAt,
+        resumedAt: null,
+      };
+    });
+  };
+
+  const handleResumeFlight = () => {
+    const resumedAt = Date.now();
+
+    setFlightPlan((currentFlightPlan) => {
+      if (!currentFlightPlan || !currentFlightPlan.isPaused) {
+        return currentFlightPlan;
+      }
+
+      return {
+        ...currentFlightPlan,
+        isPaused: false,
+        pausedAt: null,
+        resumedAt,
+      };
+    });
+  };
+
+  const handleToggleMusic = () => {
+    setFlightPlan((currentFlightPlan) => {
+      if (!currentFlightPlan) {
+        return currentFlightPlan;
+      }
+
+      return {
+        ...currentFlightPlan,
+        musicEnabled: !currentFlightPlan.musicEnabled,
+      };
+    });
   };
 
   return (
@@ -59,11 +129,16 @@ export default function Home() {
       <div className="pointer-events-none absolute left-10 top-10 z-20 sm:left-6 sm:top-6">
         <div className="pointer-events-auto">
           <MainPanel
+            activeFlight={flightPlan}
             focusDuration={focusDuration}
             fromAirport={fromAirport}
+            onCancelFlight={handleCancelFlight}
             toAirport={toAirport}
             onFromSelect={handleFromSelect}
+            onPauseFlight={handlePauseFlight}
+            onResumeFlight={handleResumeFlight}
             onTakeOff={handleTakeOff}
+            onToggleMusic={handleToggleMusic}
             onToSelect={handleToSelect}
           />
         </div>
