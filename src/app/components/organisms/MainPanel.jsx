@@ -29,7 +29,11 @@ export default function MainPanel({
         isOpen || activeFlight ? "min-h-0" : "min-h-11"
       }`}
     >
-      <PanelHeader isOpen={isOpen} onToggle={() => setIsOpen((prev) => !prev)} />
+      <PanelHeader
+        hasActiveFlight={Boolean(activeFlight)}
+        isOpen={isOpen}
+        onToggle={() => setIsOpen((prev) => !prev)}
+      />
 
       {activeFlight ? (
         <ActiveFlightPanel

@@ -1,7 +1,9 @@
 "use client";
-
+import { Slider } from "antd";
+import "antd/dist/reset.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cityDatabase } from "../../db/cityDatabase";
+import { getFocusDurationByCities } from "../../db/focusDurationDatabase";
 import {
   FlightLand14Icon,
   FlightLand16Icon,
@@ -13,6 +15,7 @@ import AirportCard from "./AirportCard";
 
 export default function AirportSelectorInput({
   type = "from",
+  referenceAirport,
   selectedAirport,
   excludedCity,
   onSelect,
@@ -28,18 +31,35 @@ export default function AirportSelectorInput({
   const cardIcon = type === "from" ? FlightTakeoff14Icon : FlightLand14Icon;
   const placeholder = type === "from" ? "From" : "To";
 
+  const [selectedMinutes, setSelectedMinutes] = useState(60);
+  const marks = {
+    0: "0",
+    30: "30",
+    60: "60",
+    90: "90",
+    120: "120",
+  };
+
   const airportItems = useMemo(() => {
     return cityDatabase
       .filter((cityItem) => cityItem.city !== excludedCity)
       .flatMap((cityItem) =>
-        cityItem.airports.map((airport) => ({
-          city: cityItem.city,
-          country: cityItem.country,
-          code: airport.code,
-          coordinates: airport.coordinates,
-        })),
+        cityItem.airports.map((airport) => {
+          const focusDuration = getFocusDurationByCities(
+            referenceAirport?.city,
+            cityItem.city,
+          );
+
+          return {
+            city: cityItem.city,
+            country: cityItem.country,
+            code: airport.code,
+            coordinates: airport.coordinates,
+            focusMinutes: focusDuration?.minutes ?? null,
+          };
+        }),
       );
-  }, [excludedCity]);
+  }, [excludedCity, referenceAirport?.city]);
 
   const handleSelect = (airport) => {
     onSelect(airport);
@@ -85,7 +105,22 @@ export default function AirportSelectorInput({
       </button>
 
       {isPickerOpen && (
-        <div className="ring-2 ring-dark-400 absolute left-0 top-14 z-30 w-67 rounded-2xl bg-dark-200 p-2 shadow-[0_0_72px_rgba(0,0,0,0.56)]">
+        <div className="absolute left-0 top-14 z-30 w-88 rounded-2xl bg-dark-100 p-2 shadow-[0_0_72px_rgba(0,0,0,0.56)]">
+          <div className="mb-4 px-3 pt-2">
+            <Slider
+              min={0}
+              max={120}
+              step={5}
+              marks={marks}
+              value={selectedMinutes}
+              onChange={setSelectedMinutes}
+              tooltip={{
+                open: true,
+                formatter: (value) => `${value} min`,
+              }}
+            />
+          </div>
+
           <div className="grid max-h-60 grid-cols-2 gap-2 overflow-y-auto">
             {airportItems.map((airport) => {
               const isActive = selectedAirport?.code === airport.code;
@@ -97,6 +132,7 @@ export default function AirportSelectorInput({
                   country={airport.country}
                   airportCode={airport.code}
                   codeIcon={cardIcon}
+                  focusMinutes={type === "to" ? airport.focusMinutes : null}
                   active={isActive}
                   onClick={() => handleSelect(airport)}
                 />

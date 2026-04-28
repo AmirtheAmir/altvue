@@ -1,7 +1,7 @@
 export const cityDatabase = [
   {
     city: "New York",
-    country: "United States of America",
+    country: "USA",
     airports: [
       {
         code: "JFK",
@@ -15,7 +15,7 @@ export const cityDatabase = [
   },
   {
     city: "London",
-    country: "United Kingdom",
+    country: "UK",
     airports: [
       {
         code: "LHR",
@@ -126,7 +126,7 @@ export const cityDatabase = [
   },
   {
     city: "Los Angeles",
-    country: "United States of America",
+    country: "USA",
     airports: [
       {
         code: "LAX",
@@ -140,7 +140,7 @@ export const cityDatabase = [
   },
   {
     city: "Chicago",
-    country: "United States of America",
+    country: "USA",
     airports: [
       {
         code: "ORD",
@@ -178,7 +178,7 @@ export const cityDatabase = [
   },
   {
     city: "Dubai",
-    country: "United Arab Emirates",
+    country: "UAE",
     airports: [
       {
         code: "DXB",

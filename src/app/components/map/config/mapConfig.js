@@ -44,7 +44,7 @@ export const PLANE_ROUTE_SOURCE_ID = "animated-route-plane";
 export const PLANE_ROUTE_LAYER_ID = "animated-route-plane-symbol";
 
 // Rotation correction for the airplane_28 SVG so its nose follows route travel.
-export const PLANE_ROUTE_ICON_ROTATION_OFFSET = 100;
+export const PLANE_ROUTE_ICON_ROTATION_OFFSET = 102;
 
 // Visual scale for the animated plane symbol on the map.
-export const PLANE_ROUTE_ICON_SIZE = 2.45;
+export const PLANE_ROUTE_ICON_SIZE = 1.5;

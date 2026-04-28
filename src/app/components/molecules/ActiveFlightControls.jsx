@@ -14,7 +14,7 @@ export default function ActiveFlightControls({
       <button
         type="button"
         onClick={onCancel}
-        className="font-S-700 p-3 rounded-lg text-dark-900 transition-all duration-300 ease-in-out hover:cursor-pointer hover:ring-2 hover:ring-dark-600"
+        className="font-S-700 py-2.5 rounded-lg text-dark-900 transition-all duration-300 ease-in-out hover:cursor-pointer hover:ring-2 hover:ring-dark-600"
       >
         Cancel
       </button>

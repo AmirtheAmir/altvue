@@ -9,5 +9,9 @@ export { default as FlightTakeoff16Icon } from "@/assets/icons/flight_takeoff_16
 export { default as GpsFixedIcon } from "@/assets/icons/gps_fixed.svg";
 export { default as GpsNotFixedIcon } from "@/assets/icons/gps_not_fixed.svg";
 export { default as HelpIcon } from "@/assets/icons/help.svg";
+export { default as MusicNoteOffIcon } from "@/assets/icons/music_note_off.svg";
+export { default as MusicNoteOnIcon } from "@/assets/icons/music_note_on.svg";
 export { default as PauseIcon } from "@/assets/icons/pause.svg";
 export { default as PlayArrowIcon } from "@/assets/icons/play_arrow.svg";
+export { default as TicketMainIcon } from "@/assets/icons/ticket_main.svg";
+export { default as TicketRestIcon } from "@/assets/icons/ticket_rest.svg";

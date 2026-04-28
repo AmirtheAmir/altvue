@@ -19,7 +19,7 @@ const EMPTY_PLANE_DATA = {
 };
 
 const PLANE_ICON_SVG = `
-  <svg width="28" height="28" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg width="52" height="52" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M28.9283 18.7509L28.4535 16.4664L17.5572 12.7733L16.2513 6.49092C16.0542 5.54285 15.1299 4.93662 14.1818 5.13369C13.2337 5.33075 12.6275 6.25514 12.8246 7.20321L14.1304 13.4856L5.60842 21.215L6.08327 23.4995L15.1988 18.6257L16.5047 24.9081L14.0052 27.2151L14.3614 28.9284L18.6929 26.8365L23.4994 27.029L23.1432 25.3156L19.9315 24.1958L18.6256 17.9134L28.9283 18.7509Z" fill="#DC252B"/>
   </svg>
 `;
@@ -124,12 +124,18 @@ const ensurePlaneLayer = async (map) => {
       },
     });
   }
+
+  map.moveLayer(PLANE_ROUTE_LAYER_ID);
 };
 
 const updatePlaneLayer = (map, coordinates, bearing) => {
   const source = map.getSource(PLANE_ROUTE_SOURCE_ID);
 
   if (source) {
+    if (map.getLayer(PLANE_ROUTE_LAYER_ID)) {
+      map.moveLayer(PLANE_ROUTE_LAYER_ID);
+    }
+
     source.setData(getPlaneData(coordinates, bearing));
   }
 };
