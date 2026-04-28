@@ -1,6 +1,4 @@
 "use client";
-import { Slider } from "antd";
-import "antd/dist/reset.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cityDatabase } from "../../db/cityDatabase";
 import { getFocusDurationByCities } from "../../db/focusDurationDatabase";
@@ -105,22 +103,7 @@ export default function AirportSelectorInput({
       </button>
 
       {isPickerOpen && (
-        <div className="absolute left-0 top-14 z-30 w-88 rounded-2xl bg-dark-100 p-2 shadow-[0_0_72px_rgba(0,0,0,0.56)]">
-          <div className="mb-4 px-3 pt-2">
-            <Slider
-              min={0}
-              max={120}
-              step={5}
-              marks={marks}
-              value={selectedMinutes}
-              onChange={setSelectedMinutes}
-              tooltip={{
-                open: true,
-                formatter: (value) => `${value} min`,
-              }}
-            />
-          </div>
-
+        <div className="absolute left-0 top-14 z-30 w-88 rounded-2xl bg-dark-200 p-2 shadow-[0_0_72px_rgba(0,0,0,0.56)]">
           <div className="grid max-h-60 grid-cols-2 gap-2 overflow-y-auto">
             {airportItems.map((airport) => {
               const isActive = selectedAirport?.code === airport.code;

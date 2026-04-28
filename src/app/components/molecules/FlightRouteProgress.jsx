@@ -17,7 +17,7 @@ export default function FlightRouteProgress({
 
   return (
     <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 mt-1">
-      <span className="font-S-500 uppercase text-crim-800">
+      <span className="font-S-700 uppercase text-crim-800">
         {startLabel}
       </span>
       <div className="relative h-8 min-w-0">
@@ -36,7 +36,7 @@ export default function FlightRouteProgress({
           <Airplane16Icon aria-hidden="true" className="block translate-y-px text-dark-0" />
         </div>
       </div>
-      <span className="font-S-500 uppercase text-crim-800 text-right">
+      <span className="font-S-700 uppercase text-crim-800 text-right">
         {endLabel}
       </span>
     </div>

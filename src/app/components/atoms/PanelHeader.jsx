@@ -20,7 +20,7 @@ export default function PanelHeader({ hasActiveFlight = false, isOpen, onToggle 
   const [isGpsFixed, setIsGpsFixed] = useState(true);
 
   const MusicIcon = isMusicEnabled ? MusicNoteOnIcon : MusicNoteOffIcon;
-  const GpsIcon = isGpsFixed ? GpsFixedIcon : GpsNotFixedIcon;
+  const GpsIcon = isGpsFixed ? GpsNotFixedIcon : GpsFixedIcon;
   const DropdownIcon = isOpen ? ArrowDropUpIcon : ArrowDropDownIcon;
 
   return (
