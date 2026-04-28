@@ -39,7 +39,7 @@ export default function ActiveFlightSummary({
         <FlightRouteProgress progress={routeProgress} />
       </div>
 
-      <div className="flex items-start justify-between">
+      <div className="flex  items-start justify-between">
         <div className="flex min-w-0 flex-col ">
           <span className="font-L-700 text-dark-0">{fromAirport.code}</span>
           <span className="font-XS-700 truncate text-dark-900">

@@ -1,6 +1,6 @@
 "use client";
 
-import { GlobeIcon, ArrowDropDownIcon, ArrowDropUpIcon } from "@/assets/icons";
+import { ArrowDropDownIcon, ArrowDropUpIcon } from "@/assets/icons";
 
 export default function PanelHeader({ isOpen, onToggle }) {
   return (
@@ -10,7 +10,6 @@ export default function PanelHeader({ isOpen, onToggle }) {
       className="flex w-full items-center hover:cursor-pointer transition-all duration-300 ease-in-out justify-between"
     >
       <div className="flex items-center gap-3">
-        <GlobeIcon aria-hidden="true" />
         <span className="font-S-700 text-dark-0">ALTVUE</span>
       </div>
 

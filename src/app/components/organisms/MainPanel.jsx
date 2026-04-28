@@ -7,7 +7,6 @@ import FlightChooserPanel from "./FlightChooserPanel";
 
 export default function MainPanel({
   activeFlight = null,
-  focusDuration,
   fromAirport,
   onCancelFlight,
   toAirport,
@@ -15,7 +14,6 @@ export default function MainPanel({
   onPauseFlight,
   onResumeFlight,
   onTakeOff,
-  onToggleMusic,
   onToSelect,
 }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,7 +25,7 @@ export default function MainPanel({
 
   return (
     <section
-      className={`flex w-101 max-w-[calc(100vw-2rem)] flex-col gap-4 rounded-3xl bg-[rgba(0,0,0,0.25)] p-3 shadow-[0_0_56px_rgba(0,0,0,0.72)] backdrop-blur-lg transition-all duration-300 ease-in-out ${
+      className={`flex w-80 max-w-[calc(100vw-2rem)] flex-col gap-4 rounded-3xl bg-crim-516 p-3 shadow-[0_0_56px_rgba(0,0,0,0.72)] backdrop-blur-lg transition-all duration-300 ease-in-out ${
         isOpen || activeFlight ? "min-h-0" : "min-h-11"
       }`}
     >
@@ -40,11 +38,9 @@ export default function MainPanel({
           onCancel={handleCancelFlight}
           onPause={onPauseFlight}
           onResume={onResumeFlight}
-          onToggleMusic={onToggleMusic}
         />
       ) : isOpen ? (
         <FlightChooserPanel
-          focusDuration={focusDuration}
           fromAirport={fromAirport}
           onFromSelect={onFromSelect}
           onTakeOff={onTakeOff}

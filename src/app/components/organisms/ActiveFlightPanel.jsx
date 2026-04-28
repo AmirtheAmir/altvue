@@ -52,13 +52,11 @@ export default function ActiveFlightPanel({
   onCancel,
   onPause,
   onResume,
-  onToggleMusic,
 }) {
   const now = useFlightClock(activeFlight);
   const remainingMs = getFlightRemainingMs(activeFlight, now);
   // This plane intentionally moves in 90-second steps, separate from the map plane.
   const routeProgress = getSteppedFlightProgress(activeFlight, now);
-  const isComplete = remainingMs <= 0;
 
   if (!isOpen) {
     return (
@@ -72,7 +70,7 @@ export default function ActiveFlightPanel({
   }
 
   return (
-    <div className="rounded-2xl ring-2 ring-dark-400 p-3">
+    <div className="rounded-2xl bg-crim-532 p-3">
       <ActiveFlightSummary
         activeFlight={activeFlight}
         isOpen={isOpen}
@@ -81,11 +79,9 @@ export default function ActiveFlightPanel({
       />
       <ActiveFlightControls
         activeFlight={activeFlight}
-        isComplete={isComplete}
         onCancel={onCancel}
         onPause={onPause}
         onResume={onResume}
-        onToggleMusic={onToggleMusic}
       />
     </div>
   );

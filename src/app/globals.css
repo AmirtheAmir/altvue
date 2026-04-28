@@ -1,22 +1,27 @@
 @import "tailwindcss";
 
 :root {
-  --dark-50: #0a0a0a;
-  --dark-100: #151515;
-  --dark-200: #1f1f1f;
-  --dark-300: #292929;
-  --dark-400: #3d3d3d;
-  --dark-500: #525252;
-  --dark-600: #666666;
-  --dark-700: #808080;
-  --dark-800: #999999;
-  --dark-900: #b8b8b8;
-  --dark-950: #d6d6d6;
-  --dark-0: #f5f5f5;
+  --dark-50: #0b0909;
+  --dark-100: #161313;
+  --dark-200: #201d1d;
+  --dark-300: #2b2727;
+  --dark-400: #413939;
+  --dark-500: #564d4d;
+  --dark-600: #6c6060;
+  --dark-900: #bcb4b4;
+  --dark-950: #d8d3d3;
+  --dark-0: #f6f4f4;
 
-  --yellow-100: #fed27c;
-  --yellow-500: #fca902;
-  --yellow-900: #835801;
+  --red-200: #e4585d;
+  --red-500: #dc252b;
+  --red-600: #ca2126;
+  --red-800: #A71B20;
+  --red-500-16: #4f0d0f1a;
+  --red-500-40: #4f0d0f66;
+  --red-0: #4f0d0f;
+  --red-0: #4f0d0f;
+  --red-32: #541a1c;
+  --red-48: #741c1f;
 
   --font-family-base: var(--font-inter);
 
@@ -47,17 +52,6 @@
   --font-l-700-size: 16px;
   --font-l-700-line-height: 150%;
   --font-l-700-letter-spacing: 0em;
-
-  --font-xl-500-size: 18px;
-  --font-xl-500-line-height: 144%;
-  --font-xl-500-letter-spacing: 0em;
-
-  --font-2xl-500-size: 20px;
-  --font-2xl-500-line-height: 140%;
-  --font-2xl-500-letter-spacing: -0.01em;
-  --font-2xl-700-size: 20px;
-  --font-2xl-700-line-height: 140%;
-  --font-2xl-700-letter-spacing: -0.01em;
 }
 
 @theme inline {
@@ -70,15 +64,18 @@
   --color-dark-400: var(--dark-400);
   --color-dark-500: var(--dark-500);
   --color-dark-600: var(--dark-600);
-  --color-dark-700: var(--dark-700);
-  --color-dark-800: var(--dark-800);
   --color-dark-900: var(--dark-900);
   --color-dark-950: var(--dark-950);
   --color-dark-0: var(--dark-0);
 
-  --color-gold-100: var(--yellow-100);
-  --color-gold-500: var(--yellow-500);
-  --color-gold-900: var(--yellow-900);
+  --color-crim-200: var(--red-200);
+  --color-crim-500: var(--red-500);
+  --color-crim-600: var(--red-600);
+  --color-crim-800: var(--red-800);
+  --color-crim-516: var(--red-500-16);
+  --color-crim-532: var(--red-500-40);
+  --color-crim-32: var(--red-32);
+  --color-crim-48: var(--red-48);
 }
 
 body {
@@ -145,29 +142,6 @@ body {
   line-height: var(--font-l-700-line-height);
   font-weight: 700;
   letter-spacing: var(--font-l-700-letter-spacing);
-}
-
-.font-XL-500 {
-  font-family: var(--font-family-base), sans-serif;
-  font-size: var(--font-xl-500-size);
-  line-height: var(--font-xl-500-line-height);
-  font-weight: 500;
-  letter-spacing: var(--font-xl-500-letter-spacing);
-}
-
-.font-2XL-500 {
-  font-family: var(--font-family-base), sans-serif;
-  font-size: var(--font-2xl-500-size);
-  line-height: var(--font-2xl-500-line-height);
-  font-weight: 500;
-  letter-spacing: var(--font-2xl-500-letter-spacing);
-}
-.font-2XL-700 {
-  font-family: var(--font-family-base), sans-serif;
-  font-size: var(--font-2xl-700-size);
-  line-height: var(--font-2xl-700-line-height);
-  font-weight: 700;
-  letter-spacing: var(--font-2xl-700-letter-spacing);
 }
 
 /* Hide scrollbars everywhere while keeping scroll behavior */

@@ -16,8 +16,8 @@ export const ROUTE_SOURCE_ID = "selected-airport-route";
 // Layer ID used by MapLibre to draw the selected route line.
 export const ROUTE_LAYER_ID = "selected-airport-route-line";
 
-// Route line color, matching the dark-500 design token.
-export const ROUTE_LINE_COLOR = "#525252";
+// Route line color, matching the dark-400 design token.
+export const ROUTE_LINE_COLOR = "#413939";
 
 // Route line width in pixels.
 export const ROUTE_LINE_WIDTH = 2;
@@ -43,5 +43,8 @@ export const PLANE_ROUTE_SOURCE_ID = "animated-route-plane";
 // Layer ID used by MapLibre to draw the animated plane symbol.
 export const PLANE_ROUTE_LAYER_ID = "animated-route-plane-symbol";
 
+// Rotation correction for the airplane_28 SVG so its nose follows route travel.
+export const PLANE_ROUTE_ICON_ROTATION_OFFSET = 100;
+
 // Visual scale for the animated plane symbol on the map.
-export const PLANE_ROUTE_ICON_SIZE = 1;
+export const PLANE_ROUTE_ICON_SIZE = 2.45;

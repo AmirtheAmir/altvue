@@ -76,7 +76,6 @@ export default function AirportSelectorInput({
           placeholder={placeholder}
           city={selectedAirport?.city}
           country={selectedAirport?.country}
-          code={selectedAirport?.code}
           isSelected={Boolean(selectedAirport)}
           iconClassName={iconClassName}
           placeholderClassName={placeholderClassName}

@@ -56,7 +56,6 @@ export default function Home() {
       elapsedBeforePauseMs: 0,
       fromAirport,
       isPaused: false,
-      musicEnabled: true,
       resumedAt: startedAt,
       toAirport,
     }));
@@ -104,19 +103,6 @@ export default function Home() {
     });
   };
 
-  const handleToggleMusic = () => {
-    setFlightPlan((currentFlightPlan) => {
-      if (!currentFlightPlan) {
-        return currentFlightPlan;
-      }
-
-      return {
-        ...currentFlightPlan,
-        musicEnabled: !currentFlightPlan.musicEnabled,
-      };
-    });
-  };
-
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-dark-50 text-dark-0">
       <AltvueMap
@@ -126,11 +112,10 @@ export default function Home() {
         toAirport={toAirport}
       />
 
-      <div className="pointer-events-none absolute left-10 top-10 z-20 sm:left-6 sm:top-6">
+      <div className="pointer-events-none absolute left-12 top-12 z-20 sm:left-6 sm:top-6">
         <div className="pointer-events-auto">
           <MainPanel
             activeFlight={flightPlan}
-            focusDuration={focusDuration}
             fromAirport={fromAirport}
             onCancelFlight={handleCancelFlight}
             toAirport={toAirport}
@@ -138,7 +123,6 @@ export default function Home() {
             onPauseFlight={handlePauseFlight}
             onResumeFlight={handleResumeFlight}
             onTakeOff={handleTakeOff}
-            onToggleMusic={handleToggleMusic}
             onToSelect={handleToSelect}
           />
         </div>
