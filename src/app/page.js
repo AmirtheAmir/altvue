@@ -12,6 +12,7 @@ export default function Home() {
   const [toAirport, setToAirport] = useState(null);
   const [focusedCoordinates, setFocusedCoordinates] = useState(null);
   const [flightPlan, setFlightPlan] = useState(null);
+  const [mapResetRequest, setMapResetRequest] = useState(0);
   const focusDuration = useMemo(() => {
     return getFocusDurationByAirports(fromAirport, toAirport);
   }, [fromAirport, toAirport]);
@@ -68,6 +69,10 @@ export default function Home() {
     setFocusedCoordinates(null);
   };
 
+  const handleCenterMap = () => {
+    setMapResetRequest((request) => request + 1);
+  };
+
   const handlePauseFlight = () => {
     const pausedAt = Date.now();
 
@@ -109,6 +114,7 @@ export default function Home() {
         focusedCoordinates={focusedCoordinates}
         flightPlan={flightPlan}
         fromAirport={fromAirport}
+        resetViewRequest={mapResetRequest}
         toAirport={toAirport}
       />
 
@@ -118,6 +124,7 @@ export default function Home() {
             activeFlight={flightPlan}
             fromAirport={fromAirport}
             onCancelFlight={handleCancelFlight}
+            onCenterMap={handleCenterMap}
             toAirport={toAirport}
             onFromSelect={handleFromSelect}
             onPauseFlight={handlePauseFlight}

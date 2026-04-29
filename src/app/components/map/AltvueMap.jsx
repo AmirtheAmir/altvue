@@ -1,16 +1,18 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useInitializeMap } from "./hooks/useInitializeMap";
 import { useMapFocus } from "./hooks/useMapFocus";
 import { usePlaneRouteAnimation } from "./hooks/usePlaneRouteAnimation";
 import { useRouteSync } from "./hooks/useRouteSync";
+import { INITIAL_CENTER, INITIAL_ZOOM, MAP_FOCUS_DURATION } from "./config/mapConfig";
 import { getSelectedMarkerTypes } from "./utils/markerUtils";
 
 export default function AltvueMap({
   focusedCoordinates = null,
   flightPlan = null,
   fromAirport = null,
+  resetViewRequest = 0,
   toAirport = null,
 }) {
   // DOM node passed to MapLibre as the map container.
@@ -49,6 +51,22 @@ export default function AltvueMap({
 
   useMapFocus({ mapRef, focusedCoordinates });
   usePlaneRouteAnimation({ mapRef, flightPlan });
+
+  useEffect(() => {
+    const map = mapRef.current;
+
+    if (!map || resetViewRequest === 0) {
+      return;
+    }
+
+    map.stop();
+    map.easeTo({
+      center: INITIAL_CENTER,
+      zoom: INITIAL_ZOOM,
+      duration: MAP_FOCUS_DURATION,
+      essential: true,
+    });
+  }, [resetViewRequest]);
 
   return (
     <section className="relative h-full w-full overflow-hidden bg-dark-50 z-0">

@@ -11,6 +11,7 @@ export default function MainPanel({
   onCancelFlight,
   toAirport,
   onFromSelect,
+  onCenterMap,
   onPauseFlight,
   onResumeFlight,
   onTakeOff,
@@ -32,6 +33,7 @@ export default function MainPanel({
       <PanelHeader
         hasActiveFlight={Boolean(activeFlight)}
         isOpen={isOpen}
+        onCenterMap={onCenterMap}
         onToggle={() => setIsOpen((prev) => !prev)}
       />
 

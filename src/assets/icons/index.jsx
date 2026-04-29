@@ -2,6 +2,7 @@ export { default as Airplane16Icon } from "@/assets/icons/airplane_16.svg";
 export { default as Airplane28Icon } from "@/assets/icons/airplane_28.svg";
 export { default as ArrowDropDownIcon } from "@/assets/icons/arrow_drop_down.svg";
 export { default as ArrowDropUpIcon } from "@/assets/icons/arrow_drop_up.svg";
+export { default as CenterIcon } from "@/assets/icons/center.svg";
 export { default as FlightLand14Icon } from "@/assets/icons/flight_land_14.svg";
 export { default as FlightLand16Icon } from "@/assets/icons/flight_land_16.svg";
 export { default as FlightTakeoff14Icon } from "@/assets/icons/flight_takeoff_14.svg";

@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
   ArrowDropDownIcon,
   ArrowDropUpIcon,
+  CenterIcon,
   GpsFixedIcon,
   GpsNotFixedIcon,
   HelpIcon,
@@ -15,7 +16,12 @@ import Tooltip from "./Tooltip";
 const iconButtonClassName =
   "flex items-center justify-center text-dark-0 transition-colors duration-300 ease-in-out hover:cursor-pointer hover:text-crim-200";
 
-export default function PanelHeader({ hasActiveFlight = false, isOpen, onToggle }) {
+export default function PanelHeader({
+  hasActiveFlight = false,
+  isOpen,
+  onCenterMap,
+  onToggle,
+}) {
   const [isMusicEnabled, setIsMusicEnabled] = useState(true);
   const [isGpsFixed, setIsGpsFixed] = useState(true);
 
@@ -62,11 +68,28 @@ export default function PanelHeader({ hasActiveFlight = false, isOpen, onToggle 
             </Tooltip>
           </>
         ) : (
-          <Tooltip label="View Instructions">
-            <button type="button" aria-label="Help" className={iconButtonClassName}>
-              <HelpIcon aria-hidden="true" />
-            </button>
-          </Tooltip>
+          <>
+            <Tooltip label="Center Map">
+              <button
+                type="button"
+                aria-label="Center map"
+                className={iconButtonClassName}
+                onClick={onCenterMap}
+              >
+                <CenterIcon aria-hidden="true" />
+              </button>
+            </Tooltip>
+
+            <Tooltip label="View Instructions">
+              <button
+                type="button"
+                aria-label="Help"
+                className={iconButtonClassName}
+              >
+                <HelpIcon aria-hidden="true" />
+              </button>
+            </Tooltip>
+          </>
         )}
 
         <button
