@@ -18,7 +18,7 @@ export default function AirportCard({
     <button
       type="button"
       onClick={onClick}
-      className={`group flex w-full flex-col gap-1.5 rounded-xl bg-dark-300 p-1.5 text-left text-dark-0 transition-all duration-300 ease-in-out hover:cursor-pointer hover:bg-dark-0 hover:text-dark-100
+      className={`group flex w-full flex-col gap-1.5 rounded-xl bg-dark-300 p-2 text-left text-dark-0 transition-all duration-300 ease-in-out hover:cursor-pointer hover:bg-dark-0 hover:text-dark-100
         ${active ? "ring-2 ring-crim-500" : ""}
       `}
     >

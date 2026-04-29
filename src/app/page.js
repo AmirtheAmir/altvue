@@ -112,7 +112,7 @@ export default function Home() {
         toAirport={toAirport}
       />
 
-      <div className="pointer-events-none absolute left-12 top-12 z-20 sm:left-6 sm:top-6">
+      <div className="pointer-events-none absolute left-14 top-14 z-20 sm:left-6 sm:top-6">
         <div className="pointer-events-auto">
           <MainPanel
             activeFlight={flightPlan}
