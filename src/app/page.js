@@ -17,7 +17,12 @@ export default function Home() {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isFlightAudioMuted, setIsFlightAudioMuted] = useState(false);
   const [isPlaneCameraLocked, setIsPlaneCameraLocked] = useState(true);
-  const { startFlightAudio, stopFlightAudio } = useFlightAudio({
+  const {
+    pauseFlightAudio,
+    resumeFlightAudio,
+    startFlightAudio,
+    stopFlightAudio,
+  } = useFlightAudio({
     isMuted: isFlightAudioMuted,
   });
   const focusDuration = useMemo(() => {
@@ -119,6 +124,7 @@ export default function Home() {
         resumedAt: null,
       };
     });
+    pauseFlightAudio();
   };
 
   const handleResumeFlight = () => {
@@ -136,6 +142,7 @@ export default function Home() {
         resumedAt,
       };
     });
+    resumeFlightAudio();
   };
 
   return (

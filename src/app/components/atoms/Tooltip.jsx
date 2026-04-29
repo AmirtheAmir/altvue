@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 export default function Tooltip({
   children,
   className = "",
@@ -7,6 +9,7 @@ export default function Tooltip({
   showOnHover = true,
   variant = "neutral",
 }) {
+  const [isDismissed, setIsDismissed] = useState(false);
   const isInline = position === "inline";
   const isTop = position === "top";
   const tooltipPosition = isInline
@@ -26,12 +29,26 @@ export default function Tooltip({
     variant === "error" ? "border-t-crim-200 border-b-crim-200" : "border-t-dark-950 border-b-dark-950";
   const visibilityClassName = isVisible
     ? "opacity-100"
-    : showOnHover
+    : showOnHover && !isDismissed
       ? "opacity-0 group-hover/tooltip:opacity-100 group-focus-within/tooltip:opacity-100"
       : "opacity-0";
 
+  const handlePointerEnter = () => {
+    setIsDismissed(false);
+  };
+
+  const handlePointerDown = () => {
+    if (showOnHover) {
+      setIsDismissed(true);
+    }
+  };
+
   return (
-    <span className={`group/tooltip relative inline-flex ${className}`}>
+    <span
+      className={`group/tooltip relative inline-flex ${className}`}
+      onPointerDownCapture={handlePointerDown}
+      onPointerEnter={handlePointerEnter}
+    >
       {children}
       <span
         role="tooltip"
