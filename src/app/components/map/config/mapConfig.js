@@ -46,6 +46,24 @@ export const PLANE_ROUTE_SOURCE_ID = "animated-route-plane";
 // Layer ID used by MapLibre to draw the animated plane symbol.
 export const PLANE_ROUTE_LAYER_ID = "animated-route-plane-symbol";
 
+// GeoJSON source ID used by MapLibre for active flight endpoint circles.
+export const FLIGHT_ENDPOINT_SOURCE_ID = "active-flight-endpoints";
+
+// Layer ID used by MapLibre to draw active flight endpoint circles.
+export const FLIGHT_ENDPOINT_LAYER_ID = "active-flight-endpoints-circle";
+
+// Circle color used for active flight start/end markers.
+export const FLIGHT_ENDPOINT_CIRCLE_COLOR = "#A71B20";
+
+// Circle stroke color used to keep active flight endpoint markers readable.
+export const FLIGHT_ENDPOINT_CIRCLE_STROKE_COLOR = "#413939";
+
+// Circle radius in pixels for active flight start/end markers.
+export const FLIGHT_ENDPOINT_CIRCLE_RADIUS = 5;
+
+// Circle stroke width in pixels for active flight start/end markers.
+export const FLIGHT_ENDPOINT_CIRCLE_STROKE_WIDTH = 2;
+
 // Rotation correction for the airplane_28 SVG so its nose follows route travel.
 export const PLANE_ROUTE_ICON_ROTATION_OFFSET = 102;
 

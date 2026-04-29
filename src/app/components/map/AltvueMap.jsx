@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useFlightEndpointCircles } from "./hooks/useFlightEndpointCircles";
 import { useInitializeMap } from "./hooks/useInitializeMap";
 import { useMapFocus } from "./hooks/useMapFocus";
 import { usePlaneRouteAnimation } from "./hooks/usePlaneRouteAnimation";
@@ -74,6 +75,7 @@ export default function AltvueMap({
   });
 
   useMapFocus({ mapRef, focusedCoordinates });
+  useFlightEndpointCircles({ flightPlan, mapRef });
   usePlaneRouteAnimation({ followPlane, flightPlan, mapRef, planeOverlayRef });
 
   useEffect(() => {
