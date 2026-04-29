@@ -17,6 +17,10 @@ const getDurationBucket = (minutes) => {
   );
 };
 
+const getAirportKey = (airport) => {
+  return `${airport.city}-${airport.code}`;
+};
+
 export default function ToOverlay({
   airportItems,
   cardIcon,
@@ -30,21 +34,31 @@ export default function ToOverlay({
     startX: 0,
   });
   const hasDraggedRef = useRef(false);
-  const sectionRefs = useRef({});
+  const airportCardRefs = useRef({});
   const scrollerRef = useRef(null);
+
+  const sortedAirportItems = [...airportItems].sort((firstAirport, secondAirport) => {
+    return (firstAirport.focusMinutes ?? Infinity) - (secondAirport.focusMinutes ?? Infinity);
+  });
 
   const groupedAirportItems = FILTER_MINUTES.map((minutes) => ({
     minutes,
-    airports: airportItems
+    airports: sortedAirportItems
       .filter((airport) => getDurationBucket(airport.focusMinutes) === minutes)
-      .sort((firstAirport, secondAirport) => {
-        return (firstAirport.focusMinutes ?? 0) - (secondAirport.focusMinutes ?? 0);
-      }),
   }));
 
   const handleFilterClick = (minutes) => {
+    const targetAirport =
+      sortedAirportItems.find((airport) => airport.focusMinutes >= minutes) ??
+      sortedAirportItems[sortedAirportItems.length - 1];
+
     setActiveFilter(minutes);
-    sectionRefs.current[minutes]?.scrollIntoView({
+
+    if (!targetAirport) {
+      return;
+    }
+
+    airportCardRefs.current[getAirportKey(targetAirport)]?.scrollIntoView({
       behavior: "smooth",
       block: "nearest",
       inline: "start",
@@ -64,7 +78,6 @@ export default function ToOverlay({
       startX: event.clientX,
     };
     hasDraggedRef.current = false;
-    scroller.setPointerCapture(event.pointerId);
   };
 
   const handlePointerMove = (event) => {
@@ -84,14 +97,8 @@ export default function ToOverlay({
     scroller.scrollLeft = dragState.startScrollLeft - dragDelta;
   };
 
-  const handlePointerUp = (event) => {
-    const scroller = scrollerRef.current;
-
+  const handlePointerUp = () => {
     dragStateRef.current.isDragging = false;
-
-    if (scroller?.hasPointerCapture(event.pointerId)) {
-      scroller.releasePointerCapture(event.pointerId);
-    }
   };
 
   const handleClickCapture = (event) => {
@@ -129,28 +136,36 @@ export default function ToOverlay({
         {groupedAirportItems.map(({ airports, minutes }) => (
           <div
             key={minutes}
-            ref={(element) => {
-              if (element) {
-                sectionRefs.current[minutes] = element;
-              }
-            }}
             className="flex shrink-0 gap-2"
           >
             {airports.map((airport) => {
               const isActive = selectedAirport?.code === airport.code;
+              const airportKey = getAirportKey(airport);
 
               return (
-                <AirportCard
-                  key={`${airport.city}-${airport.code}`}
-                  city={airport.city}
-                  className="w-36 shrink-0"
-                  country={airport.country}
-                  airportCode={airport.code}
-                  codeIcon={cardIcon}
-                  focusMinutes={airport.focusMinutes}
-                  active={isActive}
-                  onClick={() => onSelect(airport)}
-                />
+                <div
+                  key={airportKey}
+                  ref={(element) => {
+                    if (element) {
+                      airportCardRefs.current[airportKey] = element;
+                      return;
+                    }
+
+                    delete airportCardRefs.current[airportKey];
+                  }}
+                  className="shrink-0"
+                >
+                  <AirportCard
+                    city={airport.city}
+                    className="w-36"
+                    country={airport.country}
+                    airportCode={airport.code}
+                    codeIcon={cardIcon}
+                    focusMinutes={airport.focusMinutes}
+                    active={isActive}
+                    onClick={() => onSelect(airport)}
+                  />
+                </div>
               );
             })}
           </div>
