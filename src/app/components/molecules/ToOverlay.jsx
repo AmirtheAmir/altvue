@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import DurationFilterButton from "../atoms/DurationFilterButton";
-import AirportCodeChip from "../atoms/AirportCodeChip";
+import AirportCard from "./AirportCard";
 
 const FILTER_MINUTES = [15, 40, 65, 90, 115];
 
@@ -106,7 +106,7 @@ export default function ToOverlay({
 
   return (
     <div className="absolute flex flex-col gap-3 left-0 top-14 z-30 w-74 max-w-[calc(100vw-3rem)] rounded-2xl bg-dark-200 p-2 shadow-[0_0_72px_rgba(0,0,0,0.56)] ring-2 ring-dark-400">
-      <div className=" flex gap-1 overflow-x-auto">
+      <div className=" flex gap-1 flex-row w-full">
         {FILTER_MINUTES.map((minutes) => (
           <DurationFilterButton
             key={minutes}
@@ -140,40 +140,17 @@ export default function ToOverlay({
               const isActive = selectedAirport?.code === airport.code;
 
               return (
-                <button
+                <AirportCard
                   key={`${airport.city}-${airport.code}`}
-                  type="button"
+                  city={airport.city}
+                  className="w-36 shrink-0"
+                  country={airport.country}
+                  airportCode={airport.code}
+                  codeIcon={cardIcon}
+                  focusMinutes={airport.focusMinutes}
+                  active={isActive}
                   onClick={() => onSelect(airport)}
-                  className={`flex h-21 w-50 shrink-0 flex-col justify-between rounded-xl p-3 text-left transition-colors duration-300 hover:cursor-pointer ${
-                    isActive
-                      ? "bg-dark-0 text-dark-100"
-                      : "bg-dark-300 text-dark-0 hover:bg-dark-0 hover:text-dark-100"
-                  }`}
-                >
-                  <div className="flex min-w-0 items-center justify-between gap-3">
-                    <div className="truncate font-S-700">{airport.city}</div>
-                    <AirportCodeChip
-                      code={airport.code}
-                      icon={cardIcon}
-                      className={`shrink-0 ${
-                        isActive
-                          ? "bg-crim-500 text-dark-100 ring-dark-100"
-                          : "ring-crim-500 text-crim-500"
-                      }`}
-                    />
-                  </div>
-
-                  <div className="flex min-w-0 items-center justify-between gap-3">
-                    <div className="truncate font-S-500 text-dark-600">
-                      {airport.country}
-                    </div>
-                    {airport.focusMinutes ? (
-                      <div className="shrink-0 font-S-700 text-dark-600">
-                        {airport.focusMinutes} min
-                      </div>
-                    ) : null}
-                  </div>
-                </button>
+                />
               );
             })}
           </div>

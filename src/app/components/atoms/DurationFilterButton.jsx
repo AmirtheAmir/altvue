@@ -9,10 +9,10 @@ export default function DurationFilterButton({
     <button
       type="button"
       onClick={onClick}
-      className={`shrink-0 rounded-md px-3 py-1.5 font-S-700 transition-colors duration-300 hover:cursor-pointer ${
+      className={`shrink-0 rounded-md flex-1 py-1 font-XS-700 transition-all duration-300 hover:cursor-pointer ${
         active
           ? "bg-dark-0 text-dark-100"
-          : "bg-crim-0 text-crim-200 hover:bg-crim-48 hover:text-dark-0"
+          : "bg-crim-0 text-dark-600 hover:text-dark-900"
       }`}
     >
       {minutes} Min
