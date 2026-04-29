@@ -7,6 +7,7 @@ import FlightChooserPanel from "./FlightChooserPanel";
 export default function MainPanel({
   activeFlight = null,
   fromAirport,
+  isFlightAudioMuted,
   isOpen,
   isPlaneCameraLocked,
   onCancelFlight,
@@ -18,6 +19,7 @@ export default function MainPanel({
   onResumeFlight,
   onTakeOff,
   onToSelect,
+  onToggleFlightAudioMute,
   onTogglePlaneCameraLock,
 }) {
   const handleCancelFlight = () => {
@@ -33,9 +35,11 @@ export default function MainPanel({
     >
       <PanelHeader
         hasActiveFlight={Boolean(activeFlight)}
+        isFlightAudioMuted={isFlightAudioMuted}
         isPlaneCameraLocked={isPlaneCameraLocked}
         isOpen={isOpen}
         onCenterMap={onCenterMap}
+        onToggleFlightAudioMute={onToggleFlightAudioMute}
         onToggle={() => onOpenChange(!isOpen)}
         onTogglePlaneCameraLock={onTogglePlaneCameraLock}
       />

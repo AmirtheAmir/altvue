@@ -5,6 +5,7 @@ import AltvueMap from "./components/map/AltvueMap";
 import MainPanel from "./components/organisms/MainPanel";
 import { getCityCenterByAirport } from "./db/cityDatabase";
 import { getFocusDurationByAirports } from "./db/focusDurationDatabase";
+import { useFlightAudio } from "./hooks/useFlightAudio";
 import { getFlightDurationMs, getFlightElapsedMs } from "./utils/flightTiming";
 
 export default function Home() {
@@ -14,7 +15,11 @@ export default function Home() {
   const [flightPlan, setFlightPlan] = useState(null);
   const [mapResetRequest, setMapResetRequest] = useState(0);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [isFlightAudioMuted, setIsFlightAudioMuted] = useState(false);
   const [isPlaneCameraLocked, setIsPlaneCameraLocked] = useState(true);
+  const { startFlightAudio, stopFlightAudio } = useFlightAudio({
+    isMuted: isFlightAudioMuted,
+  });
   const focusDuration = useMemo(() => {
     return getFocusDurationByAirports(fromAirport, toAirport);
   }, [fromAirport, toAirport]);
@@ -60,6 +65,7 @@ export default function Home() {
       return;
     }
 
+    startFlightAudio(durationMs);
     setIsPlaneCameraLocked(true);
     setFlightPlan((currentFlightPlan) => ({
       id: (currentFlightPlan?.id ?? 0) + 1,
@@ -78,6 +84,7 @@ export default function Home() {
 
   const handleCancelFlight = () => {
     setFlightPlan(null);
+    stopFlightAudio();
     setIsPlaneCameraLocked(true);
     setFromAirport(null);
     setToAirport(null);
@@ -90,6 +97,10 @@ export default function Home() {
 
   const handleTogglePlaneCameraLock = () => {
     setIsPlaneCameraLocked((isLocked) => !isLocked);
+  };
+
+  const handleToggleFlightAudioMute = () => {
+    setIsFlightAudioMuted((isMuted) => !isMuted);
   };
 
   const handlePauseFlight = () => {
@@ -144,6 +155,7 @@ export default function Home() {
           <MainPanel
             activeFlight={flightPlan}
             fromAirport={fromAirport}
+            isFlightAudioMuted={isFlightAudioMuted}
             isOpen={isPanelOpen}
             isPlaneCameraLocked={isPlaneCameraLocked}
             onCancelFlight={handleCancelFlight}
@@ -155,6 +167,7 @@ export default function Home() {
             onResumeFlight={handleResumeFlight}
             onTakeOff={handleTakeOff}
             onToSelect={handleToSelect}
+            onToggleFlightAudioMute={handleToggleFlightAudioMute}
             onTogglePlaneCameraLock={handleTogglePlaneCameraLock}
           />
         </div>

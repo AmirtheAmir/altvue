@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   ArrowDropDownIcon,
   ArrowDropUpIcon,
@@ -18,15 +17,15 @@ const iconButtonClassName =
 
 export default function PanelHeader({
   hasActiveFlight = false,
+  isFlightAudioMuted = false,
   isPlaneCameraLocked = true,
   isOpen,
   onCenterMap,
+  onToggleFlightAudioMute,
   onTogglePlaneCameraLock,
   onToggle,
 }) {
-  const [isMusicEnabled, setIsMusicEnabled] = useState(true);
-
-  const MusicIcon = isMusicEnabled ? MusicNoteOnIcon : MusicNoteOffIcon;
+  const MusicIcon = isFlightAudioMuted ? MusicNoteOffIcon : MusicNoteOnIcon;
   const GpsIcon = isPlaneCameraLocked ? GpsFixedIcon : GpsNotFixedIcon;
   const DropdownIcon = isOpen ? ArrowDropUpIcon : ArrowDropDownIcon;
 
@@ -54,15 +53,13 @@ export default function PanelHeader({
                 <GpsIcon aria-hidden="true" />
               </button>
             </Tooltip>
-            <Tooltip
-              label={isMusicEnabled ? "Turn Off Music" : "Turn On Music"}
-            >
+            <Tooltip label={isFlightAudioMuted ? "Turn On Music" : "Turn Off Music"}>
               <button
                 type="button"
-                aria-label={isMusicEnabled ? "Turn music off" : "Turn music on"}
-                aria-pressed={isMusicEnabled}
+                aria-label={isFlightAudioMuted ? "Turn music on" : "Turn music off"}
+                aria-pressed={!isFlightAudioMuted}
                 className={iconButtonClassName}
-                onClick={() => setIsMusicEnabled((current) => !current)}
+                onClick={onToggleFlightAudioMute}
               >
                 <MusicIcon aria-hidden="true" />
               </button>
