@@ -18,15 +18,16 @@ const iconButtonClassName =
 
 export default function PanelHeader({
   hasActiveFlight = false,
+  isPlaneCameraLocked = true,
   isOpen,
   onCenterMap,
+  onTogglePlaneCameraLock,
   onToggle,
 }) {
   const [isMusicEnabled, setIsMusicEnabled] = useState(true);
-  const [isGpsFixed, setIsGpsFixed] = useState(true);
 
   const MusicIcon = isMusicEnabled ? MusicNoteOnIcon : MusicNoteOffIcon;
-  const GpsIcon = isGpsFixed ? GpsNotFixedIcon : GpsFixedIcon;
+  const GpsIcon = isPlaneCameraLocked ? GpsFixedIcon : GpsNotFixedIcon;
   const DropdownIcon = isOpen ? ArrowDropUpIcon : ArrowDropDownIcon;
 
   return (
@@ -42,13 +43,13 @@ export default function PanelHeader({
       <div className="flex items-center gap-4">
         {hasActiveFlight ? (
           <>
-            <Tooltip label={isGpsFixed ? "Free Camera" : "Lock View"}>
+            <Tooltip label={isPlaneCameraLocked ? "Free Camera" : "Lock View"}>
               <button
                 type="button"
-                aria-label={isGpsFixed ? "Free camera" : "Lock view"}
-                aria-pressed={isGpsFixed}
+                aria-label={isPlaneCameraLocked ? "Free camera" : "Lock view"}
+                aria-pressed={isPlaneCameraLocked}
                 className={iconButtonClassName}
-                onClick={() => setIsGpsFixed((current) => !current)}
+                onClick={onTogglePlaneCameraLock}
               >
                 <GpsIcon aria-hidden="true" />
               </button>

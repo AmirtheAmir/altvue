@@ -4,6 +4,7 @@ import {
   PLANE_ROUTE_IMAGE_ID,
   PLANE_ROUTE_ICON_SIZE,
   PLANE_ROUTE_ICON_ROTATION_OFFSET,
+  PLANE_ROUTE_FOLLOW_ZOOM,
   PLANE_ROUTE_LAYER_ID,
   PLANE_ROUTE_SOURCE_ID,
 } from "../config/mapConfig";
@@ -24,8 +25,9 @@ const PLANE_ICON_SVG = `
   </svg>
 `;
 
-// Calculates the icon rotation in screen space so it follows the route the user
-// actually sees after map projection.
+// Converts two geographic positions into the on-screen angle the icon should
+// face. Using projected screen points keeps the rotation visually aligned with
+// the curved route as it appears in the current map view.
 const getPlaneBearing = (map, currentCoordinates, nextCoordinates) => {
   if (!currentCoordinates || !nextCoordinates) {
     return null;
@@ -46,6 +48,7 @@ const getPlaneBearing = (map, currentCoordinates, nextCoordinates) => {
   );
 };
 
+// Builds the GeoJSON payload consumed by the MapLibre plane source.
 const getPlaneData = (coordinates, bearing = 0) => {
   if (!coordinates) {
     return EMPTY_PLANE_DATA;
@@ -66,6 +69,8 @@ const getPlaneData = (coordinates, bearing = 0) => {
   };
 };
 
+// Turns the inline SVG into an Image object so MapLibre can register it as a
+// reusable symbol image.
 const createPlaneImage = () => {
   return new Promise((resolve, reject) => {
     const image = new Image();
@@ -86,6 +91,7 @@ const createPlaneImage = () => {
   });
 };
 
+// Registers the plane symbol image once per map instance.
 const ensurePlaneImage = async (map) => {
   if (map.hasImage(PLANE_ROUTE_IMAGE_ID)) {
     return;
@@ -98,6 +104,9 @@ const ensurePlaneImage = async (map) => {
   }
 };
 
+// Ensures the dedicated GeoJSON source and symbol layer exist before the
+// animation starts. The layer reads its rotation from each feature's `bearing`
+// property, so moving the plane only requires updating source data.
 const ensurePlaneLayer = async (map) => {
   await ensurePlaneImage(map);
 
@@ -128,30 +137,72 @@ const ensurePlaneLayer = async (map) => {
   map.moveLayer(PLANE_ROUTE_LAYER_ID);
 };
 
+// Pushes the latest plane position into the existing MapLibre source.
 const updatePlaneLayer = (map, coordinates, bearing) => {
   const source = map.getSource(PLANE_ROUTE_SOURCE_ID);
 
   if (source) {
-    if (map.getLayer(PLANE_ROUTE_LAYER_ID)) {
-      map.moveLayer(PLANE_ROUTE_LAYER_ID);
-    }
-
     source.setData(getPlaneData(coordinates, bearing));
   }
 };
 
+// Keeps the camera centered on the plane without forcing users out of a closer
+// zoom level they may already be using.
+const updateFollowCamera = (map, coordinates) => {
+  if (map.getZoom() < PLANE_ROUTE_FOLLOW_ZOOM) {
+    map.jumpTo({
+      center: coordinates,
+      zoom: PLANE_ROUTE_FOLLOW_ZOOM,
+    });
+    return;
+  }
+
+  map.setCenter(coordinates);
+};
+
+// In locked mode the visible plane is a fixed DOM overlay. That removes the
+// tiny projection jitter that happens when a MapLibre symbol and camera both
+// move every frame.
+const updatePlaneOverlay = (planeOverlay, bearing, isVisible) => {
+  if (!planeOverlay) {
+    return;
+  }
+
+  planeOverlay.style.display = isVisible ? "block" : "none";
+  planeOverlay.style.transform = "translate(-50%, -50%)";
+
+  if (isVisible) {
+    const planeIcon = planeOverlay.firstElementChild;
+
+    if (planeIcon) {
+      planeIcon.style.transform = `rotate(${bearing}deg)`;
+      planeIcon.style.transformBox = "fill-box";
+      planeIcon.style.transformOrigin = "center";
+    }
+  }
+};
+
+// Hides the plane by replacing the source contents with an empty collection.
 const clearPlaneLayer = (map) => {
   updatePlaneLayer(map, null, 0);
 };
 
-// Starts or restarts the plane marker animation whenever a new flight plan is set.
-export const usePlaneRouteAnimation = ({ mapRef, flightPlan }) => {
-  // Keep the animation frame ID outside React state because it is an imperative
-  // browser resource and should not cause React re-renders.
+// Keeps the map's plane marker in sync with the current flight plan.
+export const usePlaneRouteAnimation = ({
+  followPlane = false,
+  flightPlan,
+  mapRef,
+  planeOverlayRef,
+}) => {
+  // Stores the active requestAnimationFrame handle so it can be cancelled across
+  // renders without causing React updates.
   const frameRef = useRef(null);
+  const isMapPlaneVisibleRef = useRef(false);
 
   useEffect(() => {
-    // Stops the animation frame loop without removing the current marker.
+    const planeOverlay = planeOverlayRef.current;
+
+    // Stops the browser animation loop but leaves the current plane data alone.
     const clearAnimationFrame = () => {
       if (frameRef.current) {
         window.cancelAnimationFrame(frameRef.current);
@@ -159,13 +210,17 @@ export const usePlaneRouteAnimation = ({ mapRef, flightPlan }) => {
       }
     };
 
-    // Clears the active plane point when the route becomes invalid.
+    // Stops motion and removes the plane from the map when the flight is no
+    // longer drawable.
     const cleanupPlane = () => {
       clearAnimationFrame();
 
       if (mapRef.current) {
         clearPlaneLayer(mapRef.current);
+        isMapPlaneVisibleRef.current = false;
       }
+
+      updatePlaneOverlay(planeOverlay, 0, false);
     };
 
     if (
@@ -186,7 +241,7 @@ export const usePlaneRouteAnimation = ({ mapRef, flightPlan }) => {
     let isAnimationCancelled = false;
 
     const startPlaneAnimation = async () => {
-      // If Take Off is clicked again, stop the old frame loop before starting over.
+      // A new flight plan replaces any previous animation loop.
       clearAnimationFrame();
       await ensurePlaneLayer(map);
 
@@ -194,8 +249,8 @@ export const usePlaneRouteAnimation = ({ mapRef, flightPlan }) => {
         return;
       }
 
-      // Reuse the same curved path as the visible route line so the marker
-      // travels exactly over the route the user sees.
+      // Use the same generated curve as the route layer so the plane sits on the
+      // exact visual path shown on the map.
       const routeCoordinates = createCurvedRouteCoordinates(
         flightPlan.fromAirport.coordinates,
         flightPlan.toAirport.coordinates,
@@ -211,18 +266,29 @@ export const usePlaneRouteAnimation = ({ mapRef, flightPlan }) => {
       let latestBearing = 0;
 
       const updatePlanePosition = () => {
-        // Progress comes from the shared flight session, so pause/resume affects
-        // the map plane and the panel countdown in exactly the same way.
+        // Progress is derived from the shared flight session model, so the map,
+        // timer, pause, and resume states all stay in lockstep.
         const progress = getFlightProgress(flightPlan);
         const currentCoordinates = getRouteCoordinateAtProgress(
           routeCoordinates,
           progress,
         );
+
+        if (!currentCoordinates) {
+          clearAnimationFrame();
+          return;
+        }
+
+        if (followPlane) {
+          updateFollowCamera(map, currentCoordinates);
+        }
+
         const nextCoordinates = getRouteCoordinateAtProgress(
           routeCoordinates,
           Math.min(progress + bearingProgressStep, 1),
         );
-        // Look one tick ahead to rotate the plane toward where it is moving next.
+        // Sample slightly ahead on the route so the icon rotates toward its next
+        // movement direction instead of lagging behind the curve.
         const nextBearing = getPlaneBearing(
           map,
           currentCoordinates,
@@ -233,14 +299,20 @@ export const usePlaneRouteAnimation = ({ mapRef, flightPlan }) => {
           latestBearing = nextBearing;
         }
 
-        if (!currentCoordinates) {
-          clearAnimationFrame();
-          return;
-        }
+        if (followPlane) {
+          if (isMapPlaneVisibleRef.current) {
+            clearPlaneLayer(map);
+            isMapPlaneVisibleRef.current = false;
+          }
 
-        // Update the MapLibre source so the plane is rendered by the same WebGL
-        // map as the route line. This keeps it pinned to the line while zooming.
-        updatePlaneLayer(map, currentCoordinates, latestBearing);
+          updatePlaneOverlay(planeOverlay, latestBearing, true);
+        } else {
+          updatePlaneOverlay(planeOverlay, latestBearing, false);
+          // Update only the GeoJSON source data. MapLibre redraws the symbol in
+          // the correct place for the current zoom and projection.
+          updatePlaneLayer(map, currentCoordinates, latestBearing);
+          isMapPlaneVisibleRef.current = true;
+        }
 
         if (progress >= 1) {
           clearAnimationFrame();
@@ -255,7 +327,7 @@ export const usePlaneRouteAnimation = ({ mapRef, flightPlan }) => {
         frameRef.current = window.requestAnimationFrame(updatePlanePosition);
       };
 
-      // Use the browser paint loop for smooth movement instead of stepped timers.
+      // Drive movement from the browser paint loop for smoother animation.
       frameRef.current = window.requestAnimationFrame(updatePlanePosition);
     };
 
@@ -265,12 +337,13 @@ export const usePlaneRouteAnimation = ({ mapRef, flightPlan }) => {
       isAnimationCancelled = true;
       clearAnimationFrame();
     };
-  }, [mapRef, flightPlan]);
+  }, [followPlane, mapRef, planeOverlayRef, flightPlan]);
 
   useEffect(() => {
     const map = mapRef.current;
+    const planeOverlay = planeOverlayRef.current;
 
-    // Final cleanup for page unmounts.
+    // Removes any leftover animation work and clears the plane on unmount.
     return () => {
       if (frameRef.current) {
         window.cancelAnimationFrame(frameRef.current);
@@ -279,6 +352,8 @@ export const usePlaneRouteAnimation = ({ mapRef, flightPlan }) => {
       if (map) {
         clearPlaneLayer(map);
       }
+
+      updatePlaneOverlay(planeOverlay, 0, false);
     };
-  }, [mapRef]);
+  }, [mapRef, planeOverlayRef]);
 };

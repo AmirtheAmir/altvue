@@ -13,6 +13,7 @@ export default function Home() {
   const [focusedCoordinates, setFocusedCoordinates] = useState(null);
   const [flightPlan, setFlightPlan] = useState(null);
   const [mapResetRequest, setMapResetRequest] = useState(0);
+  const [isPlaneCameraLocked, setIsPlaneCameraLocked] = useState(true);
   const focusDuration = useMemo(() => {
     return getFocusDurationByAirports(fromAirport, toAirport);
   }, [fromAirport, toAirport]);
@@ -47,6 +48,7 @@ export default function Home() {
       return;
     }
 
+    setIsPlaneCameraLocked(true);
     setFlightPlan((currentFlightPlan) => ({
       id: (currentFlightPlan?.id ?? 0) + 1,
       arrivalAt: startedAt + durationMs,
@@ -64,6 +66,7 @@ export default function Home() {
 
   const handleCancelFlight = () => {
     setFlightPlan(null);
+    setIsPlaneCameraLocked(true);
     setFromAirport(null);
     setToAirport(null);
     setFocusedCoordinates(null);
@@ -71,6 +74,10 @@ export default function Home() {
 
   const handleCenterMap = () => {
     setMapResetRequest((request) => request + 1);
+  };
+
+  const handleTogglePlaneCameraLock = () => {
+    setIsPlaneCameraLocked((isLocked) => !isLocked);
   };
 
   const handlePauseFlight = () => {
@@ -112,6 +119,7 @@ export default function Home() {
     <main className="relative h-screen w-screen overflow-hidden bg-dark-50 text-dark-0">
       <AltvueMap
         focusedCoordinates={focusedCoordinates}
+        followPlane={Boolean(flightPlan) && isPlaneCameraLocked}
         flightPlan={flightPlan}
         fromAirport={fromAirport}
         resetViewRequest={mapResetRequest}
@@ -123,6 +131,7 @@ export default function Home() {
           <MainPanel
             activeFlight={flightPlan}
             fromAirport={fromAirport}
+            isPlaneCameraLocked={isPlaneCameraLocked}
             onCancelFlight={handleCancelFlight}
             onCenterMap={handleCenterMap}
             toAirport={toAirport}
@@ -131,6 +140,7 @@ export default function Home() {
             onResumeFlight={handleResumeFlight}
             onTakeOff={handleTakeOff}
             onToSelect={handleToSelect}
+            onTogglePlaneCameraLock={handleTogglePlaneCameraLock}
           />
         </div>
       </div>

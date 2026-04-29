@@ -5,7 +5,7 @@ export const MAP_STYLE = "https://tiles.openfreemap.org/styles/dark";
 export const INITIAL_CENTER = [-40, 43];
 
 // Initial zoom level passed to MapLibre when the map is created.
-export const INITIAL_ZOOM = 2.2;
+export const INITIAL_ZOOM = 2.5;
 
 // Animation duration in milliseconds when focusing a selected airport.
 export const MAP_FOCUS_DURATION = 1200;
@@ -34,6 +34,9 @@ export const ROUTE_CURVE_SEGMENTS = 64;
 // How far ahead the plane looks when calculating its rotation.
 export const PLANE_ANIMATION_BEARING_LOOKAHEAD = 500;
 
+// Minimum zoom used while the camera is locked to the animated plane.
+export const PLANE_ROUTE_FOLLOW_ZOOM = 6;
+
 // Image ID used by MapLibre for the animated route plane icon.
 export const PLANE_ROUTE_IMAGE_ID = "animated-route-plane-image";
 
@@ -44,7 +47,10 @@ export const PLANE_ROUTE_SOURCE_ID = "animated-route-plane";
 export const PLANE_ROUTE_LAYER_ID = "animated-route-plane-symbol";
 
 // Rotation correction for the airplane_28 SVG so its nose follows route travel.
-export const PLANE_ROUTE_ICON_ROTATION_OFFSET = 101;
+export const PLANE_ROUTE_ICON_ROTATION_OFFSET = 102;
 
 // Visual scale for the animated plane symbol on the map.
 export const PLANE_ROUTE_ICON_SIZE = 1.5;
+
+// Pixel size used by the fixed plane overlay while the camera is locked.
+export const PLANE_ROUTE_OVERLAY_SIZE = (52 / 2) * PLANE_ROUTE_ICON_SIZE;

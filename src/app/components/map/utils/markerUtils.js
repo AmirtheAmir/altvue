@@ -26,6 +26,7 @@ export const getSelectedMarkerTypes = (fromAirport, toAirport) => {
 // Creates React-rendered MapLibre markers and stores render/cleanup handlers.
 export const createAirportMarkers = (
   map,
+  isFlightActiveRef,
   markerEntries,
   selectedMarkerTypesRef,
 ) => {
@@ -44,6 +45,7 @@ export const createAirportMarkers = (
         root.render(
           <AirportCodeMarker
             code={airport.code}
+            isFlightActive={isFlightActiveRef.current}
             isHovered={isHovered}
             selectionType={selectionType}
           />,

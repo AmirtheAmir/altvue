@@ -7,6 +7,7 @@ import { createAirportMarkers } from "../utils/markerUtils";
 
 // Creates the MapLibre map once, applies theme/markers/route, and cleans up on unmount.
 export const useInitializeMap = ({
+  isFlightActiveRef,
   mapContainerRef,
   mapRef,
   markerEntriesRef,
@@ -34,7 +35,12 @@ export const useInitializeMap = ({
 
       applyBaseMapTheme(map);
       syncRouteLayer(map, fromAirport, toAirport);
-      createAirportMarkers(map, markerEntries, selectedMarkerTypesRef);
+      createAirportMarkers(
+        map,
+        isFlightActiveRef,
+        markerEntries,
+        selectedMarkerTypesRef,
+      );
     });
 
     return () => {
@@ -46,6 +52,7 @@ export const useInitializeMap = ({
   }, [
     mapContainerRef,
     mapRef,
+    isFlightActiveRef,
     markerEntriesRef,
     selectedMarkerTypesRef,
     routeSelectionRef,

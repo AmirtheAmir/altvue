@@ -7,9 +7,14 @@ const selectedMarkerConfig = {
 
 export default function AirportCodeMarker({
   code,
+  isFlightActive = false,
   isHovered = false,
   selectionType = null,
 }) {
+  if (isFlightActive) {
+    return null;
+  }
+
   const SelectedIcon = selectionType
     ? selectedMarkerConfig[selectionType]
     : null;

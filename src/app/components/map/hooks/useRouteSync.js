@@ -5,6 +5,8 @@ import { getSelectedMarkerTypes } from "../utils/markerUtils";
 
 // Keeps selected markers and the route line in sync with from/to airport changes.
 export const useRouteSync = ({
+  isFlightActive,
+  isFlightActiveRef,
   mapRef,
   markerEntriesRef,
   routeSelectionRef,
@@ -16,6 +18,7 @@ export const useRouteSync = ({
     const map = mapRef.current;
 
     routeSelectionRef.current = { fromAirport, toAirport };
+    isFlightActiveRef.current = isFlightActive;
     selectedMarkerTypesRef.current = getSelectedMarkerTypes(
       fromAirport,
       toAirport,
@@ -35,6 +38,8 @@ export const useRouteSync = ({
   }, [
     mapRef,
     markerEntriesRef,
+    isFlightActive,
+    isFlightActiveRef,
     routeSelectionRef,
     selectedMarkerTypesRef,
     fromAirport,
