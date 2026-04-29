@@ -13,6 +13,7 @@ export default function Home() {
   const [focusedCoordinates, setFocusedCoordinates] = useState(null);
   const [flightPlan, setFlightPlan] = useState(null);
   const [mapResetRequest, setMapResetRequest] = useState(0);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isPlaneCameraLocked, setIsPlaneCameraLocked] = useState(true);
   const focusDuration = useMemo(() => {
     return getFocusDurationByAirports(fromAirport, toAirport);
@@ -34,6 +35,17 @@ export default function Home() {
       return currentFromAirport?.city === airport.city ? null : currentFromAirport;
     });
     setFocusedCoordinates(getCityCenterByAirport(airport));
+  };
+
+  const handleAirportMarkerSelect = (airport) => {
+    setIsPanelOpen(true);
+
+    if (fromAirport || toAirport) {
+      handleToSelect(airport);
+      return;
+    }
+
+    handleFromSelect(airport);
   };
 
   const handleTakeOff = () => {
@@ -122,6 +134,7 @@ export default function Home() {
         followPlane={Boolean(flightPlan) && isPlaneCameraLocked}
         flightPlan={flightPlan}
         fromAirport={fromAirport}
+        onAirportMarkerSelect={handleAirportMarkerSelect}
         resetViewRequest={mapResetRequest}
         toAirport={toAirport}
       />
@@ -131,11 +144,13 @@ export default function Home() {
           <MainPanel
             activeFlight={flightPlan}
             fromAirport={fromAirport}
+            isOpen={isPanelOpen}
             isPlaneCameraLocked={isPlaneCameraLocked}
             onCancelFlight={handleCancelFlight}
             onCenterMap={handleCenterMap}
             toAirport={toAirport}
             onFromSelect={handleFromSelect}
+            onOpenChange={setIsPanelOpen}
             onPauseFlight={handlePauseFlight}
             onResumeFlight={handleResumeFlight}
             onTakeOff={handleTakeOff}

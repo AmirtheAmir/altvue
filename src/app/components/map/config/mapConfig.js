@@ -35,7 +35,7 @@ export const ROUTE_CURVE_SEGMENTS = 64;
 export const PLANE_ANIMATION_BEARING_LOOKAHEAD = 500;
 
 // Minimum zoom used while the camera is locked to the animated plane.
-export const PLANE_ROUTE_FOLLOW_ZOOM = 6;
+export const PLANE_ROUTE_FOLLOW_ZOOM = 8;
 
 // Image ID used by MapLibre for the animated route plane icon.
 export const PLANE_ROUTE_IMAGE_ID = "animated-route-plane-image";

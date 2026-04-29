@@ -43,6 +43,9 @@ export default function FlightChooserPanel({
 
   return (
     <div className="flex flex-col gap-4">
+        <div className="font-S-500 text-dark-900">
+          Select your departure and destination to begin your focus journey. Once you are ready, Take off.
+        </div>
       <div className="flex flex-col gap-3">
         <Tooltip
           className="z-20 w-full"
@@ -69,7 +72,7 @@ export default function FlightChooserPanel({
         />
 
         <TakeOffButton
-          className="mt-1"
+          className="mt-2"
           onBeforeAnimation={handleBeforeTakeOffAnimation}
           onClick={onTakeOff}
         />

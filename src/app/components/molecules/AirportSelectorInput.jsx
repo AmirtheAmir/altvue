@@ -9,7 +9,8 @@ import {
   FlightTakeoff16Icon,
 } from "@/assets/icons";
 import AirportSelectorButton from "../atoms/AirportSelectorButton";
-import AirportCard from "./AirportCard";
+import FromOverlay from "./FromOverlay";
+import ToOverlay from "./ToOverlay";
 
 export default function AirportSelectorInput({
   type = "from",
@@ -28,15 +29,6 @@ export default function AirportSelectorInput({
   const inputIcon = type === "from" ? FlightTakeoff16Icon : FlightLand16Icon;
   const cardIcon = type === "from" ? FlightTakeoff14Icon : FlightLand14Icon;
   const placeholder = type === "from" ? "From" : "To";
-
-  const [selectedMinutes, setSelectedMinutes] = useState(60);
-  const marks = {
-    0: "0",
-    30: "30",
-    60: "60",
-    90: "90",
-    120: "120",
-  };
 
   const airportItems = useMemo(() => {
     return cityDatabase
@@ -102,28 +94,23 @@ export default function AirportSelectorInput({
         />
       </button>
 
-      {isPickerOpen && (
-        <div className="absolute ring-2 ring-dark-400 left-0 top-14 z-30 w-74 rounded-2xl bg-dark-200 p-2 shadow-[0_0_72px_rgba(0,0,0,0.56)">
-          <div className="grid max-h-60 grid-cols-2 gap-2 overflow-y-auto">
-            {airportItems.map((airport) => {
-              const isActive = selectedAirport?.code === airport.code;
+      {isPickerOpen && type === "from" ? (
+        <FromOverlay
+          airportItems={airportItems}
+          cardIcon={cardIcon}
+          onSelect={handleSelect}
+          selectedAirport={selectedAirport}
+        />
+      ) : null}
 
-              return (
-                <AirportCard
-                  key={`${airport.city}-${airport.code}`}
-                  city={airport.city}
-                  country={airport.country}
-                  airportCode={airport.code}
-                  codeIcon={cardIcon}
-                  focusMinutes={type === "to" ? airport.focusMinutes : null}
-                  active={isActive}
-                  onClick={() => handleSelect(airport)}
-                />
-              );
-            })}
-          </div>
-        </div>
-      )}
+      {isPickerOpen && type === "to" ? (
+        <ToOverlay
+          airportItems={airportItems}
+          cardIcon={cardIcon}
+          onSelect={handleSelect}
+          selectedAirport={selectedAirport}
+        />
+      ) : null}
     </div>
   );
 }

@@ -70,7 +70,7 @@ export default function ActiveFlightPanel({
   }
 
   return (
-    <div className="rounded-2xl bg-crim-532 p-3">
+    <div className="rounded-2xl bg-crim-532 p-2">
       <ActiveFlightSummary
         activeFlight={activeFlight}
         isOpen={isOpen}

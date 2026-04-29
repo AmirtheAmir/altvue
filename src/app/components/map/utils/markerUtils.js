@@ -28,10 +28,17 @@ export const createAirportMarkers = (
   map,
   isFlightActiveRef,
   markerEntries,
+  onAirportMarkerSelectRef,
   selectedMarkerTypesRef,
 ) => {
   cityDatabase.forEach((cityItem) => {
     cityItem.airports.forEach((airport) => {
+      const airportItem = {
+        city: cityItem.city,
+        country: cityItem.country,
+        code: airport.code,
+        coordinates: airport.coordinates,
+      };
       const markerElement = document.createElement("div");
       const root = createRoot(markerElement);
       let isHovered = false;
@@ -64,8 +71,13 @@ export const createAirportMarkers = (
         renderMarker();
       };
 
+      const handleClick = () => {
+        onAirportMarkerSelectRef.current?.(airportItem);
+      };
+
       renderMarker();
 
+      markerElement.addEventListener("click", handleClick);
       markerElement.addEventListener("mouseenter", handleMouseEnter);
       markerElement.addEventListener("mouseleave", handleMouseLeave);
 
@@ -79,6 +91,7 @@ export const createAirportMarkers = (
       markerEntries.set(airport.code, {
         renderMarker,
         cleanup: () => {
+          markerElement.removeEventListener("click", handleClick);
           markerElement.removeEventListener("mouseenter", handleMouseEnter);
           markerElement.removeEventListener("mouseleave", handleMouseLeave);
           marker.remove();

@@ -13,7 +13,7 @@ export default function ActiveFlightSummary({
 
   if (!isOpen) {
     return (
-      <div className="rounded-2xl bg-crim-532 p-3">
+      <div className="rounded-2xl bg-crim-532 p-2">
         <FlightCountdown
           remainingMs={remainingMs}
           className="text-center font-S-700 text-dark-0"

@@ -19,6 +19,7 @@
   --red-500-16: #4f0d0f1a;
   --red-500-40: #4f0d0f66;
   --red-0: #4f0d0f;
+  --red-0-48: #4f0d0f66;
   --red-32: #541a1c;
   --red-48: #741c1f;
 
@@ -67,6 +68,8 @@
   --color-dark-950: var(--dark-950);
   --color-dark-0: var(--dark-0);
 
+  --color-crim-0: var(--red-0);
+  --color-crim-048: var(--red-0-48);
   --color-crim-200: var(--red-200);
   --color-crim-500: var(--red-500);
   --color-crim-600: var(--red-600);

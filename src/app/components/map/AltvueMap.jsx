@@ -18,6 +18,7 @@ export default function AltvueMap({
   followPlane = false,
   flightPlan = null,
   fromAirport = null,
+  onAirportMarkerSelect,
   resetViewRequest = 0,
   toAirport = null,
 }) {
@@ -33,6 +34,9 @@ export default function AltvueMap({
   // Marker render/cleanup handlers keyed by airport code.
   const markerEntriesRef = useRef(new Map());
 
+  // Latest marker selection handler, used by markers created once on map load.
+  const onAirportMarkerSelectRef = useRef(onAirportMarkerSelect);
+
   // Latest selected marker types, used by marker render handlers.
   const selectedMarkerTypesRef = useRef(
     getSelectedMarkerTypes(fromAirport, toAirport),
@@ -44,11 +48,16 @@ export default function AltvueMap({
   // Latest route selection, read by the map load handler.
   const routeSelectionRef = useRef({ fromAirport, toAirport });
 
+  useEffect(() => {
+    onAirportMarkerSelectRef.current = onAirportMarkerSelect;
+  }, [onAirportMarkerSelect]);
+
   useInitializeMap({
     isFlightActiveRef,
     mapContainerRef,
     mapRef,
     markerEntriesRef,
+    onAirportMarkerSelectRef,
     selectedMarkerTypesRef,
     routeSelectionRef,
   });

@@ -126,7 +126,7 @@ export const cityDatabase = [
   },
   {
     city: "Los Angeles",
-    country: "United States of America",
+    country: "United States America",
     airports: [
       {
         code: "LAX",
@@ -140,7 +140,7 @@ export const cityDatabase = [
   },
   {
     city: "Chicago",
-    country: "United States of America",
+    country: "United States America",
     airports: [
       {
         code: "ORD",

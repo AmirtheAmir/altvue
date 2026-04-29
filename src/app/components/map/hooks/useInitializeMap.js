@@ -11,6 +11,7 @@ export const useInitializeMap = ({
   mapContainerRef,
   mapRef,
   markerEntriesRef,
+  onAirportMarkerSelectRef,
   selectedMarkerTypesRef,
   routeSelectionRef,
 }) => {
@@ -39,6 +40,7 @@ export const useInitializeMap = ({
         map,
         isFlightActiveRef,
         markerEntries,
+        onAirportMarkerSelectRef,
         selectedMarkerTypesRef,
       );
     });
@@ -54,6 +56,7 @@ export const useInitializeMap = ({
     mapRef,
     isFlightActiveRef,
     markerEntriesRef,
+    onAirportMarkerSelectRef,
     selectedMarkerTypesRef,
     routeSelectionRef,
   ]);
