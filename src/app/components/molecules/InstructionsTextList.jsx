@@ -12,7 +12,7 @@ import InstructionTextItem from "../atoms/InstructionTextItem";
 const instructionItems = [
   {
     icon: InsPlaneIcon,
-    title: "Plane Minimizer",
+    title: "Panel Minimizer",
     text: "Click the plane icon to shrink the main panel into its smallest version. This gives you a cleaner view of the map, the route, and the moving plane. Click it again whenever you want to bring the full panel back.",
   },
   {
