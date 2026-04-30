@@ -13,6 +13,7 @@ import ToOverlay from "./ToOverlay";
 
 export default function AirportSelectorInput({
   cities = [],
+  disabled = false,
   type = "from",
   referenceAirport,
   selectedAirport,
@@ -22,6 +23,7 @@ export default function AirportSelectorInput({
   placeholderClassName,
   cityClassName,
   countryClassName,
+  onDisabledClick,
 }) {
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const containerRef = useRef(null);
@@ -53,8 +55,22 @@ export default function AirportSelectorInput({
   }, [cities, excludedCity, referenceAirport?.city]);
 
   const handleSelect = (airport) => {
+    if (disabled) {
+      return;
+    }
+
     onSelect(airport);
     setIsPickerOpen(false);
+  };
+
+  const handlePickerToggle = () => {
+    if (disabled) {
+      setIsPickerOpen(false);
+      onDisabledClick?.();
+      return;
+    }
+
+    setIsPickerOpen((prev) => !prev);
   };
 
   useEffect(() => {
@@ -79,8 +95,11 @@ export default function AirportSelectorInput({
     <div ref={containerRef} className="relative w-full">
       <button
         type="button"
-        onClick={() => setIsPickerOpen((prev) => !prev)}
-        className="group w-full text-left hover:cursor-pointer"
+        aria-disabled={disabled}
+        onClick={handlePickerToggle}
+        className={`group w-full text-left ${
+          disabled ? "opacity-60 hover:cursor-not-allowed" : "hover:cursor-pointer"
+        }`}
       >
         <AirportSelectorButton
           icon={inputIcon}
@@ -95,7 +114,7 @@ export default function AirportSelectorInput({
         />
       </button>
 
-      {isPickerOpen && type === "from" ? (
+      {!disabled && isPickerOpen && type === "from" ? (
         <FromOverlay
           airportItems={airportItems}
           cardIcon={cardIcon}
@@ -104,7 +123,7 @@ export default function AirportSelectorInput({
         />
       ) : null}
 
-      {isPickerOpen && type === "to" ? (
+      {!disabled && isPickerOpen && type === "to" ? (
         <ToOverlay
           airportItems={airportItems}
           cardIcon={cardIcon}

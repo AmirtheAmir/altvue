@@ -13,32 +13,33 @@ export default function FlightChooserPanel({
   onTakeOff,
   onToSelect,
 }) {
-  const [showFromError, setShowFromError] = useState(false);
+  const [departureErrorTarget, setDepartureErrorTarget] = useState(null);
+  const isToSelectorDisabled = !fromAirport;
 
   useEffect(() => {
-    if (!showFromError) {
+    if (!departureErrorTarget) {
       return;
     }
 
     const timeoutId = window.setTimeout(() => {
-      setShowFromError(false);
+      setDepartureErrorTarget(null);
     }, 2000);
 
     return () => window.clearTimeout(timeoutId);
-  }, [showFromError]);
+  }, [departureErrorTarget]);
 
   const handleBeforeTakeOffAnimation = () => {
     if (fromAirport) {
-      setShowFromError(false);
+      setDepartureErrorTarget(null);
       return true;
     }
 
-    setShowFromError(true);
+    setDepartureErrorTarget("from");
     return false;
   };
 
   const handleFromSelect = (airport) => {
-    setShowFromError(false);
+    setDepartureErrorTarget(null);
     onFromSelect(airport);
   };
 
@@ -50,7 +51,7 @@ export default function FlightChooserPanel({
       <div className="flex flex-col gap-3">
         <Tooltip
           className="z-20 w-full"
-          isVisible={showFromError}
+          isVisible={departureErrorTarget === "from"}
           label="First, Select Departure Location Pls"
           position="bottom"
           showOnHover={false}
@@ -65,14 +66,25 @@ export default function FlightChooserPanel({
             onSelect={handleFromSelect}
           />
         </Tooltip>
-        <AirportSelectorInput
-          cities={cities}
-          type="to"
-          referenceAirport={fromAirport}
-          selectedAirport={toAirport}
-          excludedCity={fromAirport?.city}
-          onSelect={onToSelect}
-        />
+        <Tooltip
+          className="z-10 w-full"
+          isVisible={departureErrorTarget === "to"}
+          label="First, Select Departure Location Pls"
+          position="bottom"
+          showOnHover={false}
+          variant="error"
+        >
+          <AirportSelectorInput
+            cities={cities}
+            disabled={isToSelectorDisabled}
+            type="to"
+            referenceAirport={fromAirport}
+            selectedAirport={toAirport}
+            excludedCity={fromAirport?.city}
+            onDisabledClick={() => setDepartureErrorTarget("to")}
+            onSelect={onToSelect}
+          />
+        </Tooltip>
 
         <TakeOffButton
           className="mt-2"

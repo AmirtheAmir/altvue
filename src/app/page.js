@@ -6,7 +6,11 @@ import AltvueMap from "./components/map/AltvueMap";
 import MainPanel from "./components/organisms/MainPanel";
 import { getFocusDurationByAirports } from "./db/focusDurationDatabase";
 import { useFlightAudio } from "./hooks/useFlightAudio";
-import { getFlightDurationMs, getFlightElapsedMs } from "./utils/flightTiming";
+import {
+  getFlightDurationMs,
+  getFlightElapsedMs,
+  getFlightRemainingMs,
+} from "./utils/flightTiming";
 import { fetchCities, getCityCenterByAirport } from "@/lib/citiesApi";
 
 export default function Home() {
@@ -57,6 +61,33 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!flightPlan || flightPlan.isPaused) {
+      return;
+    }
+
+    const remainingMs = getFlightRemainingMs(flightPlan);
+
+    const completeFlight = () => {
+      setFlightPlan(null);
+      stopFlightAudio();
+      setIsPlaneCameraLocked(true);
+      setFromAirport(null);
+      setToAirport(null);
+      setFocusedCoordinates(null);
+      setMapResetRequest((request) => request + 1);
+    };
+
+    if (remainingMs <= 0) {
+      completeFlight();
+      return;
+    }
+
+    const timeoutId = window.setTimeout(completeFlight, remainingMs);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [flightPlan, stopFlightAudio]);
+
   const focusDuration = useMemo(() => {
     return getFocusDurationByAirports(cities, fromAirport, toAirport);
   }, [cities, fromAirport, toAirport]);
@@ -71,6 +102,11 @@ export default function Home() {
   };
 
   const handleToSelect = (airport) => {
+    if (!fromAirport) {
+      setToAirport(null);
+      return;
+    }
+
     setFlightPlan(null);
     setToAirport(airport);
     setFromAirport((currentFromAirport) => {
@@ -84,7 +120,7 @@ export default function Home() {
   const handleAirportMarkerSelect = (airport) => {
     setIsPanelOpen(true);
 
-    if (fromAirport || toAirport) {
+    if (fromAirport) {
       handleToSelect(airport);
       return;
     }
