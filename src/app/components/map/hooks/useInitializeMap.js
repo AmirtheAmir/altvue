@@ -3,6 +3,7 @@ import maplibregl from "maplibre-gl";
 import { INITIAL_CENTER, INITIAL_ZOOM, MAP_STYLE } from "../config/mapConfig";
 import { syncRouteLayer } from "../layers/routeLayer";
 import { applyBaseMapTheme } from "../theme/mapTheme";
+import { isMapInstance } from "../utils/mapInstance";
 import { createAirportMarkers } from "../utils/markerUtils";
 
 const clearAirportMarkers = (markerEntries) => {
@@ -37,14 +38,21 @@ export const useInitializeMap = ({
 
     mapRef.current = map;
 
-    map.on("load", () => {
+    const handleMapLoad = () => {
+      if (!isMapInstance(map)) {
+        return;
+      }
+
       const { fromAirport, toAirport } = routeSelectionRef.current;
 
       applyBaseMapTheme(map);
       syncRouteLayer(map, fromAirport, toAirport);
-    });
+    };
+
+    map.on("load", handleMapLoad);
 
     return () => {
+      map.off("load", handleMapLoad);
       clearAirportMarkers(markerEntries);
       map.remove();
       mapRef.current = null;
@@ -63,7 +71,7 @@ export const useInitializeMap = ({
     const map = mapRef.current;
     const markerEntries = markerEntriesRef.current;
 
-    if (!map) {
+    if (!isMapInstance(map)) {
       return;
     }
 

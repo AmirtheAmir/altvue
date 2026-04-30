@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { ROUTE_SOURCE_ID } from "../config/mapConfig";
 import { syncRouteLayer } from "../layers/routeLayer";
+import { isMapInstance } from "../utils/mapInstance";
 import { getSelectedMarkerTypes } from "../utils/markerUtils";
 
 // Keeps selected markers and the route line in sync with from/to airport changes.
@@ -25,7 +26,7 @@ export const useRouteSync = ({
     );
     markerEntriesRef.current.forEach(({ renderMarker }) => renderMarker());
 
-    if (!map) {
+    if (!isMapInstance(map)) {
       return;
     }
 

@@ -18,7 +18,7 @@ const lubalin = localFont({
 
 export const metadata = {
   title: "Altvue",
-  description: "Altvue flight map",
+  description: "Your Alternative Focus App",
 };
 
 export default function RootLayout({ children }) {

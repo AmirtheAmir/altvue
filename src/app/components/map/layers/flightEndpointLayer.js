@@ -6,6 +6,7 @@ import {
   FLIGHT_ENDPOINT_LAYER_ID,
   FLIGHT_ENDPOINT_SOURCE_ID,
 } from "../config/mapConfig";
+import { isMapInstance } from "../utils/mapInstance";
 
 const EMPTY_ENDPOINT_DATA = {
   type: "FeatureCollection",
@@ -44,6 +45,10 @@ const getFlightEndpointData = (flightPlan) => {
 };
 
 const addFlightEndpointLayer = (map, flightPlan) => {
+  if (!isMapInstance(map)) {
+    return;
+  }
+
   if (!map.getSource(FLIGHT_ENDPOINT_SOURCE_ID)) {
     map.addSource(FLIGHT_ENDPOINT_SOURCE_ID, {
       type: "geojson",
@@ -67,6 +72,10 @@ const addFlightEndpointLayer = (map, flightPlan) => {
 };
 
 const updateFlightEndpointLayer = (map, flightPlan) => {
+  if (!isMapInstance(map)) {
+    return;
+  }
+
   const source = map.getSource(FLIGHT_ENDPOINT_SOURCE_ID);
 
   if (source) {
@@ -75,6 +84,10 @@ const updateFlightEndpointLayer = (map, flightPlan) => {
 };
 
 export const syncFlightEndpointLayer = (map, flightPlan) => {
+  if (!isMapInstance(map)) {
+    return;
+  }
+
   if (
     !map.getSource(FLIGHT_ENDPOINT_SOURCE_ID) ||
     !map.getLayer(FLIGHT_ENDPOINT_LAYER_ID)

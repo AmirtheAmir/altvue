@@ -4,10 +4,15 @@ import {
   ROUTE_LINE_WIDTH,
   ROUTE_SOURCE_ID,
 } from "../config/mapConfig";
+import { isMapInstance } from "../utils/mapInstance";
 import { getRouteData } from "../utils/routeUtils";
 
 // Adds the GeoJSON source and line layer used to draw the selected route.
 const addRouteLayer = (map, fromAirport, toAirport) => {
+  if (!isMapInstance(map)) {
+    return;
+  }
+
   if (!map.getSource(ROUTE_SOURCE_ID)) {
     map.addSource(ROUTE_SOURCE_ID, {
       type: "geojson",
@@ -34,6 +39,10 @@ const addRouteLayer = (map, fromAirport, toAirport) => {
 
 // Updates the existing route source with fresh GeoJSON data.
 const updateRouteLayer = (map, fromAirport, toAirport) => {
+  if (!isMapInstance(map)) {
+    return;
+  }
+
   const source = map.getSource(ROUTE_SOURCE_ID);
 
   if (source) {
@@ -43,6 +52,10 @@ const updateRouteLayer = (map, fromAirport, toAirport) => {
 
 // Ensures the route layer exists, then updates it with the current selection.
 export const syncRouteLayer = (map, fromAirport, toAirport) => {
+  if (!isMapInstance(map)) {
+    return;
+  }
+
   if (!map.getSource(ROUTE_SOURCE_ID) || !map.getLayer(ROUTE_LAYER_ID)) {
     addRouteLayer(map, fromAirport, toAirport);
     return;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import LoadingScreen from "./components/LoadingScreen";
 import AltvueMap from "./components/map/AltvueMap";
 import MainPanel from "./components/organisms/MainPanel";
 import { getFocusDurationByAirports } from "./db/focusDurationDatabase";
@@ -9,6 +10,7 @@ import { getFlightDurationMs, getFlightElapsedMs } from "./utils/flightTiming";
 import { fetchCities, getCityCenterByAirport } from "@/lib/citiesApi";
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(true);
   const [cities, setCities] = useState([]);
   const [fromAirport, setFromAirport] = useState(null);
   const [toAirport, setToAirport] = useState(null);
@@ -26,6 +28,14 @@ export default function Home() {
   } = useFlightAudio({
     isMuted: isFlightAudioMuted,
   });
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -178,6 +188,8 @@ export default function Home() {
 
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-dark-50 text-dark-0">
+      {isLoading ? <LoadingScreen /> : null}
+
       <AltvueMap
         cities={cities}
         focusedCoordinates={focusedCoordinates}

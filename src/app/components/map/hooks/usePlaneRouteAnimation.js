@@ -13,10 +13,37 @@ import {
   getRouteCoordinateAtProgress,
 } from "../utils/routeUtils";
 import { getFlightProgress } from "../../../utils/flightTiming";
+import { isMapInstance } from "../utils/mapInstance";
 
 const EMPTY_PLANE_DATA = {
   type: "FeatureCollection",
   features: [],
+};
+
+const canUsePlaneLayer = (map) => {
+  return (
+    Boolean(map) &&
+    typeof map.getSource === "function" &&
+    typeof map.getLayer === "function" &&
+    typeof map.addSource === "function" &&
+    typeof map.addLayer === "function"
+  );
+};
+
+const getPlaneSource = (map) => {
+  try {
+    return map?.getSource?.(PLANE_ROUTE_SOURCE_ID) ?? null;
+  } catch {
+    return null;
+  }
+};
+
+const getPlaneLayer = (map) => {
+  try {
+    return map?.getLayer?.(PLANE_ROUTE_LAYER_ID) ?? null;
+  } catch {
+    return null;
+  }
 };
 
 const PLANE_ICON_SVG = `
@@ -93,6 +120,10 @@ const createPlaneImage = () => {
 
 // Registers the plane symbol image once per map instance.
 const ensurePlaneImage = async (map) => {
+  if (!isMapInstance(map)) {
+    return;
+  }
+
   if (map.hasImage(PLANE_ROUTE_IMAGE_ID)) {
     return;
   }
@@ -108,41 +139,65 @@ const ensurePlaneImage = async (map) => {
 // animation starts. The layer reads its rotation from each feature's `bearing`
 // property, so moving the plane only requires updating source data.
 const ensurePlaneLayer = async (map) => {
+  if (!canUsePlaneLayer(map)) {
+    return;
+  }
+
   await ensurePlaneImage(map);
 
-  if (!map.getSource(PLANE_ROUTE_SOURCE_ID)) {
-    map.addSource(PLANE_ROUTE_SOURCE_ID, {
-      type: "geojson",
-      data: EMPTY_PLANE_DATA,
-    });
+  if (!canUsePlaneLayer(map)) {
+    return;
   }
 
-  if (!map.getLayer(PLANE_ROUTE_LAYER_ID)) {
-    map.addLayer({
-      id: PLANE_ROUTE_LAYER_ID,
-      type: "symbol",
-      source: PLANE_ROUTE_SOURCE_ID,
-      layout: {
-        "icon-allow-overlap": true,
-        "icon-anchor": "center",
-        "icon-ignore-placement": true,
-        "icon-image": PLANE_ROUTE_IMAGE_ID,
-        "icon-rotate": ["get", "bearing"],
-        "icon-rotation-alignment": "viewport",
-        "icon-size": PLANE_ROUTE_ICON_SIZE,
-      },
-    });
+  if (!getPlaneSource(map)) {
+    try {
+      map.addSource(PLANE_ROUTE_SOURCE_ID, {
+        type: "geojson",
+        data: EMPTY_PLANE_DATA,
+      });
+    } catch {
+      return;
+    }
   }
 
-  map.moveLayer(PLANE_ROUTE_LAYER_ID);
+  if (!getPlaneLayer(map)) {
+    try {
+      map.addLayer({
+        id: PLANE_ROUTE_LAYER_ID,
+        type: "symbol",
+        source: PLANE_ROUTE_SOURCE_ID,
+        layout: {
+          "icon-allow-overlap": true,
+          "icon-anchor": "center",
+          "icon-ignore-placement": true,
+          "icon-image": PLANE_ROUTE_IMAGE_ID,
+          "icon-rotate": ["get", "bearing"],
+          "icon-rotation-alignment": "viewport",
+          "icon-size": PLANE_ROUTE_ICON_SIZE,
+        },
+      });
+    } catch {
+      return;
+    }
+  }
+
+  try {
+    map.moveLayer(PLANE_ROUTE_LAYER_ID);
+  } catch {}
 };
 
 // Pushes the latest plane position into the existing MapLibre source.
 const updatePlaneLayer = (map, coordinates, bearing) => {
-  const source = map.getSource(PLANE_ROUTE_SOURCE_ID);
+  if (typeof map?.getSource !== "function") {
+    return;
+  }
+
+  const source = getPlaneSource(map);
 
   if (source) {
-    source.setData(getPlaneData(coordinates, bearing));
+    try {
+      source.setData(getPlaneData(coordinates, bearing));
+    } catch {}
   }
 };
 
@@ -184,6 +239,10 @@ const updatePlaneOverlay = (planeOverlay, bearing, isVisible) => {
 
 // Hides the plane by replacing the source contents with an empty collection.
 const clearPlaneLayer = (map) => {
+  if (typeof map?.getSource !== "function") {
+    return;
+  }
+
   updatePlaneLayer(map, null, 0);
 };
 
@@ -215,7 +274,7 @@ export const usePlaneRouteAnimation = ({
     const cleanupPlane = () => {
       clearAnimationFrame();
 
-      if (mapRef.current) {
+      if (isMapInstance(mapRef.current)) {
         clearPlaneLayer(mapRef.current);
         isMapPlaneVisibleRef.current = false;
       }
@@ -234,7 +293,7 @@ export const usePlaneRouteAnimation = ({
 
     const map = mapRef.current;
 
-    if (!map) {
+    if (!isMapInstance(map)) {
       return;
     }
 
@@ -245,7 +304,7 @@ export const usePlaneRouteAnimation = ({
       clearAnimationFrame();
       await ensurePlaneLayer(map);
 
-      if (isAnimationCancelled) {
+      if (isAnimationCancelled || !isMapInstance(map)) {
         return;
       }
 
@@ -349,7 +408,7 @@ export const usePlaneRouteAnimation = ({
         window.cancelAnimationFrame(frameRef.current);
       }
 
-      if (map) {
+      if (isMapInstance(map)) {
         clearPlaneLayer(map);
       }
 
