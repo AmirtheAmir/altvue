@@ -38,7 +38,9 @@ export default function MainPanel({
 
   return (
     <section
-      className={`flex max-w-[calc(100vw-2rem)] flex-col gap-4 rounded-3xl bg-crim-516 p-3 shadow-[0_0_56px_rgba(0,0,0,0.72)] ring-2 ring-crim-048 backdrop-blur-lg transition-all duration-300 ease-in-out ${
+      className={`flex max-w-[calc(100vw-2rem)] flex-col gap-4 rounded-3xl bg-crim-516 shadow-[0_0_56px_rgba(0,0,0,0.72)] ring-2 ring-crim-048 backdrop-blur-lg transition-all duration-300 ease-in-out ${
+        isCompact ? "py-3 pl-3 pr-4" : "p-3"
+      } ${
         isCompact ? "w-auto" : "w-80"
       } ${
         isOpen || activeFlight ? "min-h-0" : "min-h-11"

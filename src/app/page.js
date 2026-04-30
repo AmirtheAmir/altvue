@@ -29,19 +29,11 @@ export default function Home() {
 
   useEffect(() => {
     let isMounted = true;
+
     fetchCities()
       .then((nextCities) => {
         console.log("Cities from Supabase:", nextCities);
 
-        if (isMounted) {
-          setCities(nextCities);
-        }
-      })
-      .catch((error) => {
-        console.error("Failed to load cities", error);
-      });
-    fetchCities()
-      .then((nextCities) => {
         if (isMounted) {
           setCities(nextCities);
         }
@@ -133,6 +125,9 @@ export default function Home() {
   };
 
   const handleCenterMap = () => {
+    setFromAirport(null);
+    setToAirport(null);
+    setFocusedCoordinates(null);
     setMapResetRequest((request) => request + 1);
   };
 
