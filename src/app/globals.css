@@ -11,6 +11,7 @@
   --dark-900: #bcb4b4;
   --dark-950: #d8d3d3;
   --dark-0: #f6f4f4;
+  --dark-0-72: #26252566;
 
   --red-200: #e4585d;
   --red-500: #dc252b;
@@ -67,6 +68,7 @@
   --color-dark-900: var(--dark-900);
   --color-dark-950: var(--dark-950);
   --color-dark-0: var(--dark-0);
+  --color-dark-072: var(--dark-0-72);
 
   --color-crim-0: var(--red-0);
   --color-crim-048: var(--red-0-48);

@@ -1,39 +1,50 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
+import { fetchAudioTracks } from "@/lib/audioApi";
 
-const FLIGHT_MUSIC_TRACKS = [
-  "/audio/blues.mp3",
-  "/audio/breath.mp3",
-  "/audio/honey.mp3",
-  "/audio/lazy.mp3",
-  "/audio/long.mp3",
-  "/audio/moon.mp3",
-  "/audio/no_hurry.mp3",
-  "/audio/patience.mp3",
-  "/audio/pause.mp3",
-  "/audio/pour.mp3",
-  "/audio/savor.mp3",
-  "/audio/soft.mp3",
-  "/audio/stirring.mp3",
-];
-
-const SEATBELT_AUDIO_SRC = "/audio/seatbelt.wav";
 const SEATBELT_DELAY_MS = 5000;
 const ARRIVAL_SEATBELT_OFFSET_MS = 5 * 60 * 1000;
 const FLIGHT_MUSIC_VOLUME = 1;
 const DUCKED_FLIGHT_MUSIC_VOLUME = 0.25;
 const SEATBELT_AUDIO_VOLUME = 0.25;
 
-const getShuffledTracks = () => {
-  const tracks = [...FLIGHT_MUSIC_TRACKS];
+const normalizeAudioText = (value) => {
+  return String(value ?? "").toLowerCase().replace(/[-_\s/\\.]/g, "");
+};
 
-  for (let index = tracks.length - 1; index > 0; index -= 1) {
-    const randomIndex = Math.floor(Math.random() * (index + 1));
-    [tracks[index], tracks[randomIndex]] = [tracks[randomIndex], tracks[index]];
+const isSeatbeltTrack = (track) => {
+  return normalizeAudioText(
+    `${track.type} ${track.filePath} ${track.file_path}`,
+  ).includes("seatbelt");
+};
+
+const isFlightMusicTrack = (track) => {
+  const trackType = normalizeAudioText(track.type);
+
+  return !isSeatbeltTrack(track) && trackType.includes("flightmode");
+};
+
+const getRandomTrack = (tracks) => {
+  if (!tracks.length) {
+    return null;
   }
 
-  return tracks;
+  return tracks[Math.floor(Math.random() * tracks.length)];
+};
+
+const getShuffledTracks = (tracks) => {
+  const shuffledTracks = [...tracks];
+
+  for (let index = shuffledTracks.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [shuffledTracks[index], shuffledTracks[randomIndex]] = [
+      shuffledTracks[randomIndex],
+      shuffledTracks[index],
+    ];
+  }
+
+  return shuffledTracks;
 };
 
 export const useFlightAudio = ({ isMuted }) => {
@@ -43,7 +54,10 @@ export const useFlightAudio = ({ isMuted }) => {
   const isMutedRef = useRef(isMuted);
   const isPausedRef = useRef(false);
   const isPlayingRef = useRef(false);
+  const musicTrackUrlsRef = useRef([]);
   const musicQueueRef = useRef([]);
+  const playNextMusicTrackRef = useRef(null);
+  const seatbeltTrackUrlsRef = useRef([]);
   const arrivalSeatbeltTimeoutRef = useRef(null);
   const arrivalSeatbeltTimeoutTargetRef = useRef(null);
   const seatbeltRemainingMsRef = useRef(null);
@@ -142,8 +156,12 @@ export const useFlightAudio = ({ isMuted }) => {
       return;
     }
 
+    if (!musicTrackUrlsRef.current.length) {
+      return;
+    }
+
     if (!musicQueueRef.current.length) {
-      musicQueueRef.current = getShuffledTracks();
+      musicQueueRef.current = getShuffledTracks(musicTrackUrlsRef.current);
     }
 
     const nextTrack = musicQueueRef.current.shift();
@@ -164,11 +182,29 @@ export const useFlightAudio = ({ isMuted }) => {
 
   const playSeatbeltAudio = () => {
     if (!isPlayingRef.current || isPausedRef.current) {
+      console.warn("Seatbelt audio skipped: flight audio is not active", {
+        isPaused: isPausedRef.current,
+        isPlaying: isPlayingRef.current,
+      });
       return;
     }
 
     isDuckedRef.current = true;
-    const seatbeltAudio = new Audio(SEATBELT_AUDIO_SRC);
+    const seatbeltTrack = getRandomTrack(seatbeltTrackUrlsRef.current);
+
+    if (!seatbeltTrack) {
+      isDuckedRef.current = false;
+      console.warn("Seatbelt audio skipped: no Supabase seatbelt track found", {
+        seatbeltTrackCount: seatbeltTrackUrlsRef.current.length,
+      });
+      return;
+    }
+
+    console.info("Playing seatbelt audio from Supabase", {
+      url: seatbeltTrack,
+    });
+
+    const seatbeltAudio = new Audio(seatbeltTrack);
 
     seatbeltAudioRef.current = seatbeltAudio;
     applyAudioState();
@@ -182,9 +218,18 @@ export const useFlightAudio = ({ isMuted }) => {
       applyAudioState();
     };
 
-    seatbeltAudio.onended = restoreMusicVolume;
-    seatbeltAudio.onerror = restoreMusicVolume;
-    seatbeltAudio.play().catch(restoreMusicVolume);
+    seatbeltAudio.onended = () => {
+      console.info("Seatbelt audio finished");
+      restoreMusicVolume();
+    };
+    seatbeltAudio.onerror = (event) => {
+      console.error("Seatbelt audio failed to load or play", event);
+      restoreMusicVolume();
+    };
+    seatbeltAudio.play().catch((error) => {
+      console.error("Seatbelt audio play() was blocked or failed", error);
+      restoreMusicVolume();
+    });
   };
 
   const startFlightAudio = (durationMs) => {
@@ -195,9 +240,14 @@ export const useFlightAudio = ({ isMuted }) => {
     stopFlightAudio();
     isPlayingRef.current = true;
     isPausedRef.current = false;
-    musicQueueRef.current = getShuffledTracks();
+    musicQueueRef.current = getShuffledTracks(musicTrackUrlsRef.current);
 
     playNextMusicTrack();
+
+    console.info("Seatbelt audio scheduled", {
+      delayMs: SEATBELT_DELAY_MS,
+      seatbeltTrackCount: seatbeltTrackUrlsRef.current.length,
+    });
 
     scheduleTimeout(
       seatbeltTimeoutRef,
@@ -294,6 +344,63 @@ export const useFlightAudio = ({ isMuted }) => {
     isMutedRef.current = isMuted;
     applyAudioState();
   }, [isMuted]);
+
+  useEffect(() => {
+    playNextMusicTrackRef.current = playNextMusicTrack;
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetchAudioTracks()
+      .then((tracks) => {
+        if (!isMounted) {
+          return;
+        }
+
+        const trackUrls = tracks
+          .filter((track) => track.url)
+          .map((track) => ({
+            filePath: track.filePath ?? track.file_path,
+            file_path: track.file_path,
+            type: track.type,
+            url: track.url,
+          }));
+
+        seatbeltTrackUrlsRef.current = trackUrls
+          .filter(isSeatbeltTrack)
+          .map((track) => track.url);
+        musicTrackUrlsRef.current = trackUrls
+          .filter(isFlightMusicTrack)
+          .map((track) => track.url);
+
+        console.info("Loaded Supabase audio tracks", {
+          musicTrackCount: musicTrackUrlsRef.current.length,
+          rawTracks: tracks.map((track) => ({
+            filePath: track.filePath ?? track.file_path,
+            type: track.type,
+          })),
+          seatbeltTrackCount: seatbeltTrackUrlsRef.current.length,
+          seatbeltTracks: trackUrls.filter(isSeatbeltTrack),
+          totalTrackCount: tracks.length,
+        });
+
+        if (
+          isPlayingRef.current &&
+          !isPausedRef.current &&
+          !flightAudioRef.current
+        ) {
+          playNextMusicTrackRef.current?.();
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load audio tracks", error);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     return () => stopFlightAudio();

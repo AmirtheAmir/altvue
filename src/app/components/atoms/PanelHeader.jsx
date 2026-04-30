@@ -23,6 +23,7 @@ export default function PanelHeader({
   isPlaneCameraLocked = true,
   isOpen,
   onCenterMap,
+  onOpenInstructions,
   onToggleCompact,
   onToggleFlightAudioMute,
   onTogglePlaneCameraLock,
@@ -93,6 +94,7 @@ export default function PanelHeader({
                   type="button"
                   aria-label="Help"
                   className={iconButtonClassName}
+                  onClick={onOpenInstructions}
                 >
                   <InstructionsIcon aria-hidden="true" />
                 </button>
