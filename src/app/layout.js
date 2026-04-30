@@ -1,4 +1,5 @@
 import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 
@@ -9,6 +10,12 @@ const inter = Inter({
   display: "swap",
 });
 
+const lubalin = localFont({
+  src: "../assets/fonts/lubalin.ttf",
+  variable: "--font-lubalin",
+  display: "swap",
+});
+
 export const metadata = {
   title: "Altvue",
   description: "Altvue flight map",
@@ -16,7 +23,10 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      className={`${inter.variable} ${lubalin.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
   );

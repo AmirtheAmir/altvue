@@ -42,7 +42,7 @@ export default function PanelHeader({
         className="flex items-center gap-2 text-left text-dark-0 transition-all duration-300 ease-in-out hover:cursor-pointer"
       >
         <MainIcon aria-hidden="true" className="text-crim-800" />
-        <span className="font-S-700 text-dark-0">ALTVUE</span>
+        <span className="font-Brand text-dark-0">Altvue</span>
       </button>
 
       {!isCompact && (

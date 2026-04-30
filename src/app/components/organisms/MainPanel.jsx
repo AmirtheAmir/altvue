@@ -49,8 +49,6 @@ export default function MainPanel({
           isCompact ? "py-3 pl-3 pr-4" : "p-3"
         } ${
           isCompact ? "w-auto" : "w-80"
-        } ${
-          isOpen || activeFlight ? "min-h-0" : "min-h-11"
         }`}
       >
         <PanelHeader
