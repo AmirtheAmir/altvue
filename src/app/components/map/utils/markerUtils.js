@@ -1,7 +1,6 @@
 import { createRoot } from "react-dom/client";
 import maplibregl from "maplibre-gl";
 import AirportCodeMarker from "../../atoms/AirportCodeMarker";
-import { cityDatabase } from "../../../db/cityDatabase";
 
 // Delays React root unmounting until React finishes the current render cycle.
 const scheduleRootUnmount = (root) => {
@@ -25,13 +24,14 @@ export const getSelectedMarkerTypes = (fromAirport, toAirport) => {
 
 // Creates React-rendered MapLibre markers and stores render/cleanup handlers.
 export const createAirportMarkers = (
+  cities,
   map,
   isFlightActiveRef,
   markerEntries,
   onAirportMarkerSelectRef,
   selectedMarkerTypesRef,
 ) => {
-  cityDatabase.forEach((cityItem) => {
+  cities.forEach((cityItem) => {
     cityItem.airports.forEach((airport) => {
       const airportItem = {
         city: cityItem.city,

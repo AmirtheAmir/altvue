@@ -1,11 +1,33 @@
-import { getCityCenterByName } from "./cityDatabase";
-
-export const FOCUS_DURATION_MINUTES = [
-  10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65,
-  70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120,
-];
+import { getCityCenterByName } from "@/lib/citiesApi";
 
 const EARTH_RADIUS_KM = 6371;
+const DEFAULT_FOCUS_MINUTES = 120;
+const SAME_CITY_FOCUS_MINUTES = 10;
+
+const FOCUS_DURATION_BY_DISTANCE_KM = [
+  [50, 10],
+  [150, 15],
+  [300, 20],
+  [600, 25],
+  [900, 30],
+  [1200, 35],
+  [1600, 40],
+  [2200, 45],
+  [2800, 50],
+  [3500, 55],
+  [4200, 60],
+  [5000, 65],
+  [6000, 70],
+  [7000, 75],
+  [8000, 80],
+  [9000, 85],
+  [10000, 90],
+  [11000, 95],
+  [12000, 100],
+  [13000, 105],
+  [14000, 110],
+  [15000, 115],
+];
 
 const degreesToRadians = (degrees) => {
   return (degrees * Math.PI) / 180;
@@ -35,58 +57,14 @@ const getDistanceKm = (fromCoordinates, toCoordinates) => {
 };
 
 const getFocusMinutesByDistanceKm = (distanceKm) => {
-  if (distanceKm <= 50) return 10;
-  if (distanceKm <= 150) return 15;
-  if (distanceKm <= 300) return 20;
-  if (distanceKm <= 600) return 25;
-  if (distanceKm <= 900) return 30;
-  if (distanceKm <= 1200) return 35;
-  if (distanceKm <= 1600) return 40;
-  if (distanceKm <= 2200) return 45;
-  if (distanceKm <= 2800) return 50;
-  if (distanceKm <= 3500) return 55;
-  if (distanceKm <= 4200) return 60;
-  if (distanceKm <= 5000) return 65;
-  if (distanceKm <= 6000) return 70;
-  if (distanceKm <= 7000) return 75;
-  if (distanceKm <= 8000) return 80;
-  if (distanceKm <= 9000) return 85;
-  if (distanceKm <= 10000) return 90;
-  if (distanceKm <= 11000) return 95;
-  if (distanceKm <= 12000) return 100;
-  if (distanceKm <= 13000) return 105;
-  if (distanceKm <= 14000) return 110;
-  if (distanceKm <= 15000) return 115;
-
-  return 120;
-};
-
-export const getFocusDurationByCities = (fromCity, toCity) => {
-  if (!fromCity || !toCity) {
-    return null;
-  }
-
-  if (fromCity === toCity) {
-    return {
-      minutes: 10,
-      distanceKm: 0,
-      label: "10 min focus flight",
-    };
-  }
-
-  const fromCoordinates = getCityCenterByName(fromCity);
-  const toCoordinates = getCityCenterByName(toCity);
-
-  if (!fromCoordinates || !toCoordinates) {
-    return null;
-  }
-
-  const distanceKm = Math.round(
-    getDistanceKm(fromCoordinates, toCoordinates)
+  const focusDuration = FOCUS_DURATION_BY_DISTANCE_KM.find(
+    ([maxDistanceKm]) => distanceKm <= maxDistanceKm,
   );
 
-  const minutes = getFocusMinutesByDistanceKm(distanceKm);
+  return focusDuration?.[1] ?? DEFAULT_FOCUS_MINUTES;
+};
 
+const createFocusDuration = (minutes, distanceKm) => {
   return {
     minutes,
     distanceKm,
@@ -94,6 +72,30 @@ export const getFocusDurationByCities = (fromCity, toCity) => {
   };
 };
 
-export const getFocusDurationByAirports = (fromAirport, toAirport) => {
-  return getFocusDurationByCities(fromAirport?.city, toAirport?.city);
+export const getFocusDurationByCities = (cities, fromCity, toCity) => {
+  if (!fromCity || !toCity) {
+    return null;
+  }
+
+  if (fromCity === toCity) {
+    return createFocusDuration(SAME_CITY_FOCUS_MINUTES, 0);
+  }
+
+  const fromCoordinates = getCityCenterByName(cities, fromCity);
+  const toCoordinates = getCityCenterByName(cities, toCity);
+
+  if (!fromCoordinates || !toCoordinates) {
+    return null;
+  }
+
+  const distanceKm = Math.round(getDistanceKm(fromCoordinates, toCoordinates));
+
+  return createFocusDuration(
+    getFocusMinutesByDistanceKm(distanceKm),
+    distanceKm,
+  );
+};
+
+export const getFocusDurationByAirports = (cities, fromAirport, toAirport) => {
+  return getFocusDurationByCities(cities, fromAirport?.city, toAirport?.city);
 };

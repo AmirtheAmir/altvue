@@ -7,6 +7,7 @@ import FlightChooserPanel from "./FlightChooserPanel";
 
 export default function MainPanel({
   activeFlight = null,
+  cities = [],
   fromAirport,
   isFlightAudioMuted,
   isOpen,
@@ -66,6 +67,7 @@ export default function MainPanel({
         />
       ) : !isCompact && isOpen ? (
         <FlightChooserPanel
+          cities={cities}
           fromAirport={fromAirport}
           onFromSelect={onFromSelect}
           onTakeOff={onTakeOff}

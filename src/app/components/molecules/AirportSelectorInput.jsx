@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { cityDatabase } from "../../db/cityDatabase";
 import { getFocusDurationByCities } from "../../db/focusDurationDatabase";
 import {
   FlightLand14Icon,
@@ -13,6 +12,7 @@ import FromOverlay from "./FromOverlay";
 import ToOverlay from "./ToOverlay";
 
 export default function AirportSelectorInput({
+  cities = [],
   type = "from",
   referenceAirport,
   selectedAirport,
@@ -31,11 +31,12 @@ export default function AirportSelectorInput({
   const placeholder = type === "from" ? "From" : "To";
 
   const airportItems = useMemo(() => {
-    return cityDatabase
+    return cities
       .filter((cityItem) => cityItem.city !== excludedCity)
       .flatMap((cityItem) =>
         cityItem.airports.map((airport) => {
           const focusDuration = getFocusDurationByCities(
+            cities,
             referenceAirport?.city,
             cityItem.city,
           );
@@ -49,7 +50,7 @@ export default function AirportSelectorInput({
           };
         }),
       );
-  }, [excludedCity, referenceAirport?.city]);
+  }, [cities, excludedCity, referenceAirport?.city]);
 
   const handleSelect = (airport) => {
     onSelect(airport);

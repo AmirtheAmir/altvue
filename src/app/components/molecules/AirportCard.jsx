@@ -28,7 +28,7 @@ export default function AirportCard({
         <AirportCodeChip
           code={airportCode}
           icon={codeIcon}
-          className="shrink-0 ring-crim-500 text-crim-500 group-hover:bg-crim-500 group-hover:text-dark-100 group-hover:ring-dark-100"
+          className="shrink-0  ring-crim-500 text-crim-500 group-hover:bg-crim-500 group-hover:text-dark-100 group-hover:ring-dark-100"
         />
       </div>
 

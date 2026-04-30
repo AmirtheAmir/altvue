@@ -5,8 +5,14 @@ import { syncRouteLayer } from "../layers/routeLayer";
 import { applyBaseMapTheme } from "../theme/mapTheme";
 import { createAirportMarkers } from "../utils/markerUtils";
 
+const clearAirportMarkers = (markerEntries) => {
+  markerEntries.forEach(({ cleanup }) => cleanup());
+  markerEntries.clear();
+};
+
 // Creates the MapLibre map once, applies theme/markers/route, and cleans up on unmount.
 export const useInitializeMap = ({
+  cities,
   isFlightActiveRef,
   mapContainerRef,
   mapRef,
@@ -36,18 +42,10 @@ export const useInitializeMap = ({
 
       applyBaseMapTheme(map);
       syncRouteLayer(map, fromAirport, toAirport);
-      createAirportMarkers(
-        map,
-        isFlightActiveRef,
-        markerEntries,
-        onAirportMarkerSelectRef,
-        selectedMarkerTypesRef,
-      );
     });
 
     return () => {
-      markerEntries.forEach(({ cleanup }) => cleanup());
-      markerEntries.clear();
+      clearAirportMarkers(markerEntries);
       map.remove();
       mapRef.current = null;
     };
@@ -59,5 +57,48 @@ export const useInitializeMap = ({
     onAirportMarkerSelectRef,
     selectedMarkerTypesRef,
     routeSelectionRef,
+  ]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    const markerEntries = markerEntriesRef.current;
+
+    if (!map) {
+      return;
+    }
+
+    const syncAirportMarkers = () => {
+      clearAirportMarkers(markerEntries);
+
+      if (!cities.length) {
+        return;
+      }
+
+      createAirportMarkers(
+        cities,
+        map,
+        isFlightActiveRef,
+        markerEntries,
+        onAirportMarkerSelectRef,
+        selectedMarkerTypesRef,
+      );
+    };
+
+    if (!map.loaded()) {
+      map.once("load", syncAirportMarkers);
+
+      return () => {
+        map.off("load", syncAirportMarkers);
+      };
+    }
+
+    syncAirportMarkers();
+  }, [
+    cities,
+    isFlightActiveRef,
+    markerEntriesRef,
+    mapRef,
+    onAirportMarkerSelectRef,
+    selectedMarkerTypesRef,
   ]);
 };

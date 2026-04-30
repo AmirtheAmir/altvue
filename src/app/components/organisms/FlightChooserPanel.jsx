@@ -6,6 +6,7 @@ import Tooltip from "../atoms/Tooltip";
 import AirportSelectorInput from "../molecules/AirportSelectorInput";
 
 export default function FlightChooserPanel({
+  cities = [],
   fromAirport,
   toAirport,
   onFromSelect,
@@ -56,6 +57,7 @@ export default function FlightChooserPanel({
           variant="error"
         >
           <AirportSelectorInput
+            cities={cities}
             type="from"
             referenceAirport={toAirport}
             selectedAirport={fromAirport}
@@ -64,6 +66,7 @@ export default function FlightChooserPanel({
           />
         </Tooltip>
         <AirportSelectorInput
+          cities={cities}
           type="to"
           referenceAirport={fromAirport}
           selectedAirport={toAirport}

@@ -1,14 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AltvueMap from "./components/map/AltvueMap";
 import MainPanel from "./components/organisms/MainPanel";
-import { getCityCenterByAirport } from "./db/cityDatabase";
 import { getFocusDurationByAirports } from "./db/focusDurationDatabase";
 import { useFlightAudio } from "./hooks/useFlightAudio";
 import { getFlightDurationMs, getFlightElapsedMs } from "./utils/flightTiming";
+import { fetchCities, getCityCenterByAirport } from "@/lib/citiesApi";
 
 export default function Home() {
+  const [cities, setCities] = useState([]);
   const [fromAirport, setFromAirport] = useState(null);
   const [toAirport, setToAirport] = useState(null);
   const [focusedCoordinates, setFocusedCoordinates] = useState(null);
@@ -25,9 +26,38 @@ export default function Home() {
   } = useFlightAudio({
     isMuted: isFlightAudioMuted,
   });
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchCities()
+      .then((nextCities) => {
+        console.log("Cities from Supabase:", nextCities);
+
+        if (isMounted) {
+          setCities(nextCities);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load cities", error);
+      });
+    fetchCities()
+      .then((nextCities) => {
+        if (isMounted) {
+          setCities(nextCities);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load cities", error);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const focusDuration = useMemo(() => {
-    return getFocusDurationByAirports(fromAirport, toAirport);
-  }, [fromAirport, toAirport]);
+    return getFocusDurationByAirports(cities, fromAirport, toAirport);
+  }, [cities, fromAirport, toAirport]);
 
   const handleFromSelect = (airport) => {
     setFlightPlan(null);
@@ -35,16 +65,18 @@ export default function Home() {
     setToAirport((currentToAirport) => {
       return currentToAirport?.city === airport.city ? null : currentToAirport;
     });
-    setFocusedCoordinates(getCityCenterByAirport(airport));
+    setFocusedCoordinates(getCityCenterByAirport(cities, airport));
   };
 
   const handleToSelect = (airport) => {
     setFlightPlan(null);
     setToAirport(airport);
     setFromAirport((currentFromAirport) => {
-      return currentFromAirport?.city === airport.city ? null : currentFromAirport;
+      return currentFromAirport?.city === airport.city
+        ? null
+        : currentFromAirport;
     });
-    setFocusedCoordinates(getCityCenterByAirport(airport));
+    setFocusedCoordinates(getCityCenterByAirport(cities, airport));
   };
 
   const handleAirportMarkerSelect = (airport) => {
@@ -59,7 +91,11 @@ export default function Home() {
   };
 
   const handleTakeOff = () => {
-    if (!fromAirport?.coordinates || !toAirport?.coordinates || !focusDuration) {
+    if (
+      !fromAirport?.coordinates ||
+      !toAirport?.coordinates ||
+      !focusDuration
+    ) {
       return;
     }
 
@@ -148,6 +184,7 @@ export default function Home() {
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-dark-50 text-dark-0">
       <AltvueMap
+        cities={cities}
         focusedCoordinates={focusedCoordinates}
         followPlane={Boolean(flightPlan) && isPlaneCameraLocked}
         flightPlan={flightPlan}
@@ -161,6 +198,7 @@ export default function Home() {
         <div className="pointer-events-auto">
           <MainPanel
             activeFlight={flightPlan}
+            cities={cities}
             fromAirport={fromAirport}
             isFlightAudioMuted={isFlightAudioMuted}
             isOpen={isPanelOpen}

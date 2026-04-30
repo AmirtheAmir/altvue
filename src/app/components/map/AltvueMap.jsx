@@ -15,6 +15,7 @@ import {
 import { getSelectedMarkerTypes } from "./utils/markerUtils";
 
 export default function AltvueMap({
+  cities = [],
   focusedCoordinates = null,
   followPlane = false,
   flightPlan = null,
@@ -54,6 +55,7 @@ export default function AltvueMap({
   }, [onAirportMarkerSelect]);
 
   useInitializeMap({
+    cities,
     isFlightActiveRef,
     mapContainerRef,
     mapRef,
