@@ -13,6 +13,8 @@ import {
 } from "./utils/flightTiming";
 import { fetchCities, getCityCenterByAirport } from "@/lib/citiesApi";
 
+const MIN_LOADING_SCREEN_MS = 2000;
+
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [cities, setCities] = useState([]);
@@ -34,27 +36,31 @@ export default function Home() {
   });
 
   useEffect(() => {
-    const timeoutId = window.setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
-    return () => window.clearTimeout(timeoutId);
-  }, []);
-
-  useEffect(() => {
     let isMounted = true;
+    const minimumLoadingDelay = new Promise((resolve) => {
+      window.setTimeout(resolve, MIN_LOADING_SCREEN_MS);
+    });
 
-    fetchCities()
-      .then((nextCities) => {
-        console.log("Cities from Supabase:", nextCities);
+    const loadCities = async () => {
+      try {
+        const nextCities = await fetchCities();
+        await minimumLoadingDelay;
 
         if (isMounted) {
           setCities(nextCities);
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Failed to load cities", error);
-      });
+
+        await minimumLoadingDelay;
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadCities();
 
     return () => {
       isMounted = false;
