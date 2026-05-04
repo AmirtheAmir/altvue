@@ -338,7 +338,9 @@ export const usePlaneRouteAnimation = ({
           return;
         }
 
-        if (followPlane) {
+        const shouldFollowPlane = followPlane && !flightPlan.isPaused;
+
+        if (shouldFollowPlane) {
           updateFollowCamera(map, currentCoordinates);
         }
 
@@ -358,7 +360,7 @@ export const usePlaneRouteAnimation = ({
           latestBearing = nextBearing;
         }
 
-        if (followPlane) {
+        if (shouldFollowPlane) {
           if (isMapPlaneVisibleRef.current) {
             clearPlaneLayer(map);
             isMapPlaneVisibleRef.current = false;
@@ -367,8 +369,8 @@ export const usePlaneRouteAnimation = ({
           updatePlaneOverlay(planeOverlay, latestBearing, true);
         } else {
           updatePlaneOverlay(planeOverlay, latestBearing, false);
-          // Update only the GeoJSON source data. MapLibre redraws the symbol in
-          // the correct place for the current zoom and projection.
+          // Paused flights also use the map layer, so the plane stays pinned to
+          // its route coordinate while the user pans or zooms.
           updatePlaneLayer(map, currentCoordinates, latestBearing);
           isMapPlaneVisibleRef.current = true;
         }
