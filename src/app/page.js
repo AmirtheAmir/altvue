@@ -13,11 +13,12 @@ import {
 } from "./utils/flightTiming";
 import { fetchCities, getCityCenterByAirport } from "@/lib/citiesApi";
 
-const MIN_LOADING_SCREEN_MS = 2000;
+const MIN_LOADING_SCREEN_MS = 3500;
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [cities, setCities] = useState([]);
+  const [hasTriedLoadingCities, setHasTriedLoadingCities] = useState(false);
   const [fromAirport, setFromAirport] = useState(null);
   const [toAirport, setToAirport] = useState(null);
   const [focusedCoordinates, setFocusedCoordinates] = useState(null);
@@ -55,6 +56,7 @@ export default function Home() {
         await minimumLoadingDelay;
       } finally {
         if (isMounted) {
+          setHasTriedLoadingCities(true);
           setIsLoading(false);
         }
       }
@@ -191,6 +193,10 @@ export default function Home() {
     setIsFlightAudioMuted((isMuted) => !isMuted);
   };
 
+  const handleReloadPage = () => {
+    window.location.reload();
+  };
+
   const handlePauseFlight = () => {
     const pausedAt = Date.now();
 
@@ -228,9 +234,40 @@ export default function Home() {
     resumeFlightAudio();
   };
 
+  const shouldShowCityLoadPopup =
+    !isLoading && hasTriedLoadingCities && cities.length === 0;
+
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-dark-50 text-dark-0">
       {isLoading ? <LoadingScreen /> : null}
+      {shouldShowCityLoadPopup ? (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-dark-100/70 px-4 backdrop-blur-sm">
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="city-load-popup-title"
+            aria-describedby="city-load-popup-description"
+            className="w-full max-w-sm rounded-2xl bg-crim-516 p-5 text-dark-0 shadow-[0_0_48px_rgba(0,0,0,0.64)] ring-2 ring-crim-048"
+          >
+            <h2 id="city-load-popup-title" className="font-S-700 text-lg">
+              Cities did not load
+            </h2>
+            <p
+              id="city-load-popup-description"
+              className="mt-2 font-S-500 text-sm text-dark-900"
+            >
+              We could not load the airport city data. Please reload the page.
+            </p>
+            <button
+              type="button"
+              onClick={handleReloadPage}
+              className="mt-5 w-full rounded-xl bg-crim-800 px-4 py-3 font-S-700 text-dark-0 transition hover:bg-crim-700 focus:outline-none focus:ring-2 focus:ring-dark-0"
+            >
+              Reload Page
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       <AltvueMap
         cities={cities}
