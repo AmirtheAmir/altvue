@@ -10,9 +10,9 @@ const inter = Inter({
   display: "swap",
 });
 
-const lubalin = localFont({
-  src: "../assets/fonts/lubalin.ttf",
-  variable: "--font-lubalin",
+const aero = localFont({
+  src: "../assets/fonts/aero.ttf",
+  variable: "--font-aero",
   display: "swap",
 });
 
@@ -25,7 +25,7 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${lubalin.variable} h-full antialiased`}
+      className={`${inter.variable} ${aero.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
