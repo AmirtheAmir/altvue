@@ -2,27 +2,27 @@
 
 :root {
   --dark-50: #0b0909;
-  --dark-100: #161313;
-  --dark-200: #201d1d;
-  --dark-300: #2b2727;
-  --dark-400: #413939;
-  --dark-500: #564d4d;
-  --dark-600: #6c6060;
-  --dark-900: #bcb4b4;
-  --dark-950: #d8d3d3;
-  --dark-0: #f6f4f4;
-  --dark-0-72: #26252566;
+  --dark-100: #161413;
+  --dark-200: #211F1C;
+  --dark-300: #2C2926;
+  --dark-400: #423E38;
+  --dark-500: #58524B;
+  --dark-600: #6E675E;
+  --dark-900: #BEB8B2;
+  --dark-950: #D9D6D3;
+  --dark-0: #F6F5F4;
 
-  --red-200: #e4585d;
-  --red-500: #dc252b;
-  --red-600: #ca2126;
-  --red-800: #A71B20;
-  --red-500-16: #4f0d0f1a;
-  --red-500-40: #4f0d0f66;
-  --red-0: #4f0d0f;
-  --red-0-48: #4f0d0f66;
-  --red-32: #541a1c;
-  --red-48: #741c1f;
+  --dark-300-16: #2C292629;
+  --dark-300-40: #2C292666;
+  --dark-300-72: #2C2926B8;
+  --dark-200-48: #211F1C7A;
+
+  --red-200: #FF4A3D;
+  --red-500: #FF1200;
+  --red-600: #EB1000;
+  --red-0: #5C0600;
+  --red-16: #3A1411;
+  --red-32: #60140E;
 
   --font-family-base: var(--font-inter);
   --font-family-brand: var(--font-aero);
@@ -72,18 +72,18 @@
   --color-dark-900: var(--dark-900);
   --color-dark-950: var(--dark-950);
   --color-dark-0: var(--dark-0);
-  --color-dark-072: var(--dark-0-72);
-
+  
   --color-crim-0: var(--red-0);
-  --color-crim-048: var(--red-0-48);
   --color-crim-200: var(--red-200);
   --color-crim-500: var(--red-500);
   --color-crim-600: var(--red-600);
-  --color-crim-800: var(--red-800);
-  --color-crim-516: var(--red-500-16);
-  --color-crim-532: var(--red-500-40);
+  --color-crim-16: var(--red-16);
   --color-crim-32: var(--red-32);
-  --color-crim-48: var(--red-48);
+  
+  --color-dark-248: var(--dark-200-48);
+  --color-dark-316: var(--dark-300-16);
+  --color-dark-340: var(--dark-300-40);
+  --color-dark-372: var(--dark-300-72);
 }
 
 body {

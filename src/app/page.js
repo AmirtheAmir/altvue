@@ -247,7 +247,7 @@ export default function Home() {
             aria-modal="true"
             aria-labelledby="city-load-popup-title"
             aria-describedby="city-load-popup-description"
-            className="w-full max-w-sm rounded-2xl bg-crim-516 p-5 text-dark-0 shadow-[0_0_48px_rgba(0,0,0,0.64)] ring-2 ring-crim-048"
+            className="w-full max-w-sm rounded-2xl bg-dark-316 p-5 text-dark-0 shadow-[0_0_48px_rgba(0,0,0,0.64)] ring-2 ring-dark-372"
           >
             <h2 id="city-load-popup-title" className="font-S-700 text-lg">
               Cities did not load
@@ -261,7 +261,7 @@ export default function Home() {
             <button
               type="button"
               onClick={handleReloadPage}
-              className="mt-5 w-full rounded-xl bg-crim-800 px-4 py-3 font-S-700 text-dark-0 transition hover:bg-crim-700 focus:outline-none focus:ring-2 focus:ring-dark-0"
+              className="mt-5 w-full rounded-xl bg-crim-500 px-4 py-3 font-S-700 text-dark-0 transition hover:bg-crim-700 focus:outline-none focus:ring-2 focus:ring-dark-0"
             >
               Reload Page
             </button>

@@ -41,7 +41,7 @@ export default function PanelHeader({
         aria-label={isCompact ? "Show panel" : "Compact panel"}
         className="flex items-center gap-2 text-left text-dark-0 transition-all duration-300 ease-in-out hover:cursor-pointer"
       >
-        <MainIcon aria-hidden="true" className="text-crim-800" />
+        <MainIcon aria-hidden="true" className="text-crim-500" />
         <span className="font-Brand text-dark-0">Altvue</span>
       </button>
 

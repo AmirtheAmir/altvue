@@ -1,7 +1,7 @@
 export default function InstructionTextItem({ icon: Icon, text, title }) {
   return (
     <article className="flex flex-col gap-2">
-      <div className="flex items-center gap-3 text-crim-800">
+      <div className="flex items-center gap-3 text-crim-500">
         <Icon aria-hidden="true" className="" />
         <h3 className="font-S-700">{title}</h3>
       </div>

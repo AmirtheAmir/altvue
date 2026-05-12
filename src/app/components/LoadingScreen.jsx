@@ -12,7 +12,7 @@ export default function LoadingScreen() {
         className="h-36 w-36"
         loop
       />
-      <p className="font-XS-700 text-crim-800">Alternative View</p>
+      <p className="font-XS-700 text-crim-500">Alternative View</p>
     </div>
   );
 }

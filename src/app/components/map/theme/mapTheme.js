@@ -61,9 +61,9 @@ const applyEnglishOnlyLabels = (map) => {
 // Applies the custom dark styling and label cleanup after the map style loads.
 export const applyBaseMapTheme = (map) => {
   setPaintIfLayerExists(map, "water", "fill-color", "#0b0909");
-  setPaintIfLayerExists(map, "background", "background-color", "#201d1d");
-  setPaintIfLayerExists(map, "boundary_state", "line-color", "#2b2727");
-  setPaintIfLayerExists(map, "boundary_country_z0-4", "line-color", "#2b2727");
+  setPaintIfLayerExists(map, "background", "background-color", "#211F1C");
+  setPaintIfLayerExists(map, "boundary_state", "line-color", "#211F1C");
+  setPaintIfLayerExists(map, "boundary_country_z0-4", "line-color", "#211F1C");
   setPaintIfLayerExists(map, "boundary_state", "line-dasharray", null);
 
   applyEnglishOnlyLabels(map);

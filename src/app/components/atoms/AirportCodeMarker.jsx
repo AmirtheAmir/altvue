@@ -25,7 +25,7 @@ export default function AirportCodeMarker({
         SelectedIcon
           ? "rounded-md ring-2 ring-crim-500 bg-dark-200 text-crim-500"
           : isHovered
-            ? "rounded-md bg-crim-32 ring-1 ring-crim-48 text-dark-600"
+            ? "rounded-md bg-crim-16 ring-1 ring-crim-32 text-dark-600"
             : "rounded-md bg-dark-300 ring-1 ring-dark-400 text-dark-600"
       }`}
     >

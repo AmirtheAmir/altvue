@@ -20,7 +20,7 @@ export default function AirportCard({
       type="button"
       onClick={onClick}
       className={`group flex flex-col gap-1.5 rounded-xl bg-dark-300 p-2 text-left text-dark-0 transition-all duration-300 ease-in-out hover:cursor-pointer hover:bg-dark-0 hover:text-dark-100 outline-none focus:outline-none focus:ring-0 focus-visible:ring-0 ${className}
-        ${active ? "shadow-[inset_0_0_24px_#4f0d0fcc]" : ""}
+        ${active ? "shadow-[inset_0_0_24px_#FF120052]" : ""}
       `}
     >
       <div className="flex min-w-0 items-center justify-between gap-3">

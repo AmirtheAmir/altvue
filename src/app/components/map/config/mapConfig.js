@@ -17,7 +17,7 @@ export const ROUTE_SOURCE_ID = "selected-airport-route";
 export const ROUTE_LAYER_ID = "selected-airport-route-line";
 
 // Route line color, matching the dark-400 design token.
-export const ROUTE_LINE_COLOR = "#413939";
+export const ROUTE_LINE_COLOR = "#423E38";
 
 // Route line width in pixels.
 export const ROUTE_LINE_WIDTH = 2;
@@ -46,6 +46,9 @@ export const PLANE_ROUTE_SOURCE_ID = "animated-route-plane";
 // Layer ID used by MapLibre to draw the animated plane symbol.
 export const PLANE_ROUTE_LAYER_ID = "animated-route-plane-symbol";
 
+// Color used by both the MapLibre plane symbol and fixed follow-mode overlay.
+export const PLANE_ROUTE_ICON_COLOR = "#FF1200";
+
 // GeoJSON source ID used by MapLibre for active flight endpoint circles.
 export const FLIGHT_ENDPOINT_SOURCE_ID = "active-flight-endpoints";
 
@@ -53,10 +56,10 @@ export const FLIGHT_ENDPOINT_SOURCE_ID = "active-flight-endpoints";
 export const FLIGHT_ENDPOINT_LAYER_ID = "active-flight-endpoints-circle";
 
 // Circle color used for active flight start/end markers.
-export const FLIGHT_ENDPOINT_CIRCLE_COLOR = "#A71B20";
+export const FLIGHT_ENDPOINT_CIRCLE_COLOR = "#FF1200";
 
 // Circle stroke color used to keep active flight endpoint markers readable.
-export const FLIGHT_ENDPOINT_CIRCLE_STROKE_COLOR = "#413939";
+export const FLIGHT_ENDPOINT_CIRCLE_STROKE_COLOR = "#5C0600";
 
 // Circle radius in pixels for active flight start/end markers.
 export const FLIGHT_ENDPOINT_CIRCLE_RADIUS = 5;
