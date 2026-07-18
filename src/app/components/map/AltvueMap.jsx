@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useFlightEndpointCircles } from "./hooks/useFlightEndpointCircles";
 import { useInitializeMap } from "./hooks/useInitializeMap";
 import { useMapFocus } from "./hooks/useMapFocus";
@@ -51,6 +51,12 @@ export default function AltvueMap({
   // Latest route selection, read by the map load handler.
   const routeSelectionRef = useRef({ fromAirport, toAirport });
 
+  const [mapUnavailableMessage, setMapUnavailableMessage] = useState(null);
+
+  const handleMapUnavailable = useCallback((message) => {
+    setMapUnavailableMessage(message);
+  }, []);
+
   useEffect(() => {
     onAirportMarkerSelectRef.current = onAirportMarkerSelect;
   }, [onAirportMarkerSelect]);
@@ -62,6 +68,7 @@ export default function AltvueMap({
     mapRef,
     markerEntriesRef,
     onAirportMarkerSelectRef,
+    onMapUnavailable: handleMapUnavailable,
     selectedMarkerTypesRef,
     routeSelectionRef,
   });
@@ -100,6 +107,22 @@ export default function AltvueMap({
   return (
     <section className="relative h-full w-full overflow-hidden bg-dark-50 z-0">
       <div ref={mapContainerRef} className="h-full w-full" />
+      {mapUnavailableMessage ? (
+        <div
+          role="status"
+          className="absolute inset-0 flex items-center justify-center bg-dark-50 px-6 text-center"
+        >
+          <div className="max-w-sm rounded-2xl bg-dark-316 p-5 text-dark-0 ring-2 ring-dark-372">
+            <p className="font-M-700">Map unavailable</p>
+            <p className="mt-2 font-S-500 text-dark-900">
+              {mapUnavailableMessage}
+            </p>
+            <p className="mt-3 font-S-500 text-dark-600">
+              Enable WebGL or hardware acceleration in the browser, then reload.
+            </p>
+          </div>
+        </div>
+      ) : null}
       <div
         ref={planeOverlayRef}
         aria-hidden="true"

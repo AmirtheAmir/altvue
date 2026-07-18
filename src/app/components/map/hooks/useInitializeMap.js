@@ -6,9 +6,30 @@ import { applyBaseMapTheme } from "../theme/mapTheme";
 import { isMapInstance } from "../utils/mapInstance";
 import { createAirportMarkers } from "../utils/markerUtils";
 
+const MAP_UNAVAILABLE_MESSAGE =
+  "The interactive map needs WebGL, but this browser could not create a WebGL context.";
+
 const clearAirportMarkers = (markerEntries) => {
   markerEntries.forEach(({ cleanup }) => cleanup());
   markerEntries.clear();
+};
+
+const canCreateWebGLContext = () => {
+  if (typeof document === "undefined") {
+    return false;
+  }
+
+  try {
+    const canvas = document.createElement("canvas");
+
+    return Boolean(
+      canvas.getContext("webgl2") ||
+        canvas.getContext("webgl") ||
+        canvas.getContext("experimental-webgl"),
+    );
+  } catch {
+    return false;
+  }
 };
 
 // Creates the MapLibre map once, applies theme/markers/route, and cleans up on unmount.
@@ -19,6 +40,7 @@ export const useInitializeMap = ({
   mapRef,
   markerEntriesRef,
   onAirportMarkerSelectRef,
+  onMapUnavailable,
   selectedMarkerTypesRef,
   routeSelectionRef,
 }) => {
@@ -28,15 +50,32 @@ export const useInitializeMap = ({
     }
 
     const markerEntries = markerEntriesRef.current;
-    const map = new maplibregl.Map({
-      container: mapContainerRef.current,
-      style: MAP_STYLE,
-      center: INITIAL_CENTER,
-      zoom: INITIAL_ZOOM,
-      attributionControl: false,
-    });
+    const mapContainer = mapContainerRef.current;
+
+    if (!mapContainer || !canCreateWebGLContext()) {
+      onMapUnavailable?.(MAP_UNAVAILABLE_MESSAGE);
+      return;
+    }
+
+    let map;
+
+    try {
+      map = new maplibregl.Map({
+        container: mapContainer,
+        style: MAP_STYLE,
+        center: INITIAL_CENTER,
+        zoom: INITIAL_ZOOM,
+        attributionControl: false,
+      });
+    } catch (error) {
+      console.error("Failed to initialize MapLibre", error);
+      onMapUnavailable?.(MAP_UNAVAILABLE_MESSAGE);
+      mapRef.current = null;
+      return;
+    }
 
     mapRef.current = map;
+    onMapUnavailable?.(null);
 
     const handleMapLoad = () => {
       if (!isMapInstance(map)) {
@@ -63,6 +102,7 @@ export const useInitializeMap = ({
     isFlightActiveRef,
     markerEntriesRef,
     onAirportMarkerSelectRef,
+    onMapUnavailable,
     selectedMarkerTypesRef,
     routeSelectionRef,
   ]);
